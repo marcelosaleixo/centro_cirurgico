@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Cadastro de colaborador')}"></head><body>
+<header th:replace="~{fragments/layout :: navbar}"></header><main class="container">
+<div th:replace="~{fragments/layout :: mensagens}"></div>
+<div class="page-heading"><div><p class="eyebrow">RECURSOS HUMANOS</p><h1 th:text="${form.id == null ? 'Novo colaborador' : 'Editar colaborador'}">Colaborador</h1><p class="muted">Os campos com * são obrigatórios.</p></div><a class="button" th:href="@{/colaboradores}">Voltar</a></div>
+<form class="panel form-grid two-columns" th:action="@{/colaboradores/salvar}" th:object="${form}" method="post">
+<input type="hidden" th:field="*{id}">
+<label>Nome completo <span class="required">*</span><input th:field="*{nome}" required maxlength="160" autocomplete="name"></label>
+<label>CPF<input th:field="*{cpf}" maxlength="14" placeholder="Somente números ou formatado"></label>
+<label>Função profissional <span class="required">*</span><select th:field="*{funcaoId}" required><option value="">Selecione...</option><option th:each="f : ${funcoes}" th:value="${f.id}" th:text="${f.nome}"></option></select><small th:if="${#lists.isEmpty(funcoes)}" class="hint">Cadastre uma função antes de cadastrar colaboradores.</small></label>
+<label>Equipe<select th:field="*{equipeId}"><option value="">Sem equipe</option><option th:each="e : ${equipes}" th:value="${e.id}" th:text="${e.nome}"></option></select></label>
+<label>Registro profissional<input th:field="*{registroProfissional}" maxlength="50" placeholder="CRM, COREN etc."></label>
+<label>E-mail<input th:field="*{email}" type="email" maxlength="160"></label>
+<label>Telefone<input th:field="*{telefone}" maxlength="30"></label>
+<label>Regime de trabalho <span class="required">*</span>
+<select id="regimeTrabalho" th:field="*{regimeTrabalho}" required>
+<option th:each="r : ${regimesTrabalho}" th:value="${r}" th:text="${r == T(com.marceloaleixo.centrocirurgico.enums.RegimeTrabalho).DOZE_TRINTA_SEIS ? '12x36 — dias alternados' : '5x2 — segunda a sexta, folga sábado e domingo'}"></option>
+</select>
+<small class="hint">12x36: um dia de trabalho e um dia de descanso. 5x2: trabalho de segunda a sexta e descanso sábado/domingo.</small>
+</label>
+<label id="plantaoReferenciaLabel">Plantão de referência <span class="required">*</span>
+<select id="plantaoReferencia" th:field="*{plantaoReferencia}" required>
+<option value="">Selecione...</option>
+<option th:each="p : ${tiposPlantao}" th:value="${p}" th:text="${p}"></option>
+</select>
+<small class="hint">Preenchido automaticamente conforme o dia do mês da data de referência.</small>
+</label>
+<label id="dataReferenciaLabel">Data de referência da escala <span class="required">*</span>
+<input id="dataReferenciaPlantao"
+       th:field="*{dataReferenciaPlantao}"
+       type="date"
+       required>
+</label>
+<label class="checkbox"><input type="checkbox" th:field="*{ativo}"> Colaborador ativo</label>
+<div class="form-actions full-width"><button class="button primary" type="submit">Salvar colaborador</button><a class="button" th:href="@{/colaboradores}">Cancelar</a></div>
+</form></main>
+<script>
+(function () {
+    const campoData = document.getElementById('dataReferenciaPlantao');
+    const campoPlantao = document.getElementById('plantaoReferencia');\n    const campoRegime = document.getElementById('regimeTrabalho');\n    const labelPlantao = document.getElementById('plantaoReferenciaLabel');\n    const labelData = document.getElementById('dataReferenciaLabel');
+
+    if (!campoData || !campoPlantao || !campoRegime) return;
+
+    function sincronizarPlantao() {
+        if (!campoData.value) {
+            campoPlantao.value = '';
+            return;
+        }
+
+        // O valor de input[type=date] é yyyy-MM-dd; o último componente é o dia do mês.
+        const dia = Number(campoData.value.split('-')[2]);
+        if (!Number.isInteger(dia) || dia < 1 || dia > 31) {
+            campoPlantao.value = '';
+            return;
+        }
+
+        campoPlantao.value = (dia % 2 === 0) ? 'PAR' : 'IMPAR';
+    }
+
+    campoData.addEventListener('change', sincronizarPlantao);
+    campoData.addEventListener('input', sincronizarPlantao);\n    campoRegime.addEventListener('change', sincronizarPlantao);
+
+    // Corrige/preenche o plantão também ao abrir o cadastro ou a edição.
+    sincronizarPlantao();
+})();
+</script>
+<div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

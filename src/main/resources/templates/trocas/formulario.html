@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Solicitar troca de plantão')}"></head><body>
+<header th:replace="~{fragments/layout :: navbar}"></header><main class="container narrow">
+<div th:replace="~{fragments/layout :: mensagens}"></div><div class="page-heading"><div><p class="eyebrow">RECURSOS HUMANOS</p><h1>Solicitar troca de plantão</h1><p class="muted">A troca ficará pendente até decisão da chefia e exige mesma função profissional.</p></div><a class="button" th:href="@{/trocas}">Voltar</a></div>
+<form class="panel form-grid" th:action="@{/trocas/solicitar}" th:object="${form}" method="post">
+<label>Solicitante <span class="required">*</span><select th:field="*{solicitanteId}" required><option value="">Selecione...</option><option th:each="c : ${colaboradores}" th:value="${c.id}" th:text="${c.nome + ' — ' + (c.funcao != null ? c.funcao.nome : 'Sem função')}"></option></select></label>
+<label>Aceitante <span class="required">*</span><select th:field="*{aceitanteId}" required><option value="">Selecione...</option><option th:each="c : ${colaboradores}" th:value="${c.id}" th:text="${c.nome + ' — ' + (c.funcao != null ? c.funcao.nome : 'Sem função')}"></option></select></label>
+<label>Data do plantão original <span class="required">*</span><input type="date" th:field="*{dataPlantaoOriginal}" required></label>
+<label>Data alternativa proposta<input type="date" th:field="*{dataPlantaoDestino}"></label>
+<label>Motivo da troca <span class="required">*</span><textarea th:field="*{motivo}" rows="4" maxlength="1000" required></textarea></label>
+<div class="form-actions"><button class="button primary">Enviar solicitação</button><a class="button" th:href="@{/trocas}">Cancelar</a></div>
+</form></main><div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

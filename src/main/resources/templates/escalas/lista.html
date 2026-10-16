@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Escalas de plantão')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container">
+  <div th:replace="~{fragments/layout :: mensagens}"></div>
+  <div class="page-heading">
+    <div><p class="eyebrow">RECURSOS HUMANOS</p><h1>Escalas de trabalho</h1><p class="muted">Consulte plantões e gere escalas alternadas com validação de férias.</p></div>
+    <div class="actions"><a class="button" th:href="@{/escalas/calendario}">Calendário</a><a class="button" th:href="@{/banco-horas}">Banco de horas</a><a class="button primary" th:href="@{/escalas/nova}">+ Nova escala</a></div>
+  </div>
+
+  <section class="panel" style="margin-bottom:18px">
+    <h2 style="margin-top:0;font-size:17px">Consultar período</h2>
+    <form class="searchbar" method="get" th:action="@{/escalas}">
+      <label>Data inicial<input type="date" name="inicio" th:value="${#temporals.format(inicio, 'yyyy-MM-dd')}" required></label>
+      <label>Data final<input type="date" name="fim" th:value="${#temporals.format(fim, 'yyyy-MM-dd')}" required></label>
+      <label>Colaborador<select name="colaboradorId"><option value="">Todos os colaboradores</option><option th:each="c : ${colaboradores}" th:value="${c.id}" th:selected="${colaboradorId != null and colaboradorId == c.id}" th:text="${c.nome}"></option></select></label>
+      <button class="button primary" type="submit">Filtrar</button>
+    </form>
+  </section>
+
+  <section class="panel" style="margin-bottom:18px">
+    <h2 style="margin-top:0;font-size:17px">Gerar escala conforme o regime do colaborador</h2>
+    <p class="muted" style="margin-bottom:14px">Aplica automaticamente o regime cadastrado: 12x36 em dias alternados ou 5x2 de segunda a sexta. Datas de férias e banco de horas são incluídas com status próprio. Datas já cadastradas são preservadas. Limite de 366 dias por geração.</p>
+    <form class="searchbar" method="post" th:action="@{/escalas/gerar}">
+      <label>Colaborador<select name="colaboradorId" required><option value="">Selecione...</option><option th:each="c : ${colaboradores}" th:value="${c.id}" th:text="${c.nome + ' — ' + c.plantaoReferencia}"></option></select></label>
+      <label>Data inicial<input type="date" name="inicio" th:value="${#temporals.format(inicio, 'yyyy-MM-dd')}" required></label>
+      <label>Data final<input type="date" name="fim" th:value="${#temporals.format(fim, 'yyyy-MM-dd')}" required></label>
+      <button class="button primary" type="submit" onclick="return confirm('Gerar plantões para o período selecionado?')">Gerar plantões</button>
+    </form>
+  </section>
+
+  <section class="panel">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Data</th><th>Colaborador</th><th>Função</th><th>Equipe</th><th>Horário</th><th>Plantão</th><th>Status</th><th>Ações</th></tr></thead>
+      <tbody>
+      <tr th:each="e : ${escalas}">
+        <td class="data-plantao"
+            th:classappend="${feriadosPeriodo.containsKey(e.dataPlantao.toString()) ? ' data-feriado' : (e.dataPlantao.dayOfWeek.value >= 6 ? ' data-fim-semana' : '')}"
+            th:title="${feriadosPeriodo.containsKey(e.dataPlantao.toString()) ? feriadosPeriodo.get(e.dataPlantao.toString()) : (e.dataPlantao.dayOfWeek.value >= 6 ? 'Fim de semana' : 'Dia útil')}">
+          <strong th:text="${#temporals.format(e.dataPlantao, 'dd/MM/yyyy')}"></strong>
+          <small class="rotulo-dia-semana"
+                 th:text="${#temporals.format(e.dataPlantao, 'EEEE', new java.util.Locale('pt','BR'))}"></small>
+          <small th:if="${feriadosPeriodo.containsKey(e.dataPlantao.toString())}"
+                 class="rotulo-data-feriado" th:text="${feriadosPeriodo.get(e.dataPlantao.toString())}"></small>
+        </td>
+        <td th:text="${e.colaborador.nome}"></td>
+        <td th:text="${e.colaborador.funcao != null ? e.colaborador.funcao.nome : '—'}"></td>
+        <td th:text="${e.colaborador.equipe != null ? e.colaborador.equipe.nome : '—'}"></td>
+        <td th:text="${e.horaInicio + ' - ' + e.horaFim}"></td>
+        <td><span class="pill" th:text="${e.tipoPlantao}"></span></td>
+        <td><span class="pill" th:text="${e.status}" th:classappend="${e.status.name() == 'FERIAS' or e.status.name() == 'BANCO_HORAS' ? ' status-ausencia' : ''}"></span></td>
+        <td class="actions"><a class="button small" th:href="@{/escalas/{id}/editar(id=${e.id})}">Editar</a><form th:action="@{/escalas/{id}/excluir(id=${e.id})}" method="post" onsubmit="return confirm('Excluir esta escala?')"><button class="button small danger" type="submit">Excluir</button></form></td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(escalas)}"><td colspan="8" class="empty">Nenhum plantão encontrado no período.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+</main>
+<div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

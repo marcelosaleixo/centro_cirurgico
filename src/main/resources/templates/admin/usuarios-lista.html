@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Gestão de usuários')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container">
+  <div th:replace="~{fragments/layout :: mensagens}"></div>
+  <div class="page-heading">
+    <div><p class="eyebrow">ADMINISTRAÇÃO DO SISTEMA</p><h1>Gestão de usuários</h1>
+      <p class="muted">Cadastre contas, altere perfis e controle o acesso ao sistema.</p></div>
+    <a class="button primary" th:href="@{/admin/usuarios/novo}">+ Novo usuário</a>
+  </div>
+  <section class="panel"><div class="table-wrap"><table>
+    <thead><tr><th>Usuário</th><th>Perfil</th><th>Status</th><th>Ações</th></tr></thead>
+    <tbody>
+      <tr th:each="u : ${usuarios}">
+        <td><strong th:text="${u.username}"></strong></td>
+        <td><span class="pill" th:text="${u.perfil}"></span></td>
+        <td><span class="pill" th:text="${u.ativo ? 'ATIVO' : 'INATIVO'}"></span></td>
+        <td class="actions">
+          <a class="button small" th:href="@{/admin/usuarios/{id}/editar(id=${u.id})}">Editar</a>
+          <form th:action="@{/admin/usuarios/{id}/alternar-status(id=${u.id})}" method="post"
+                th:onsubmit="'return confirm(\'' + (${u.ativo} ? 'Desativar' : 'Ativar') + ' este usuário?\')'">
+            <button class="button small" type="submit" th:text="${u.ativo ? 'Desativar' : 'Ativar'}"></button>
+          </form>
+        </td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(usuarios)}"><td colspan="4" class="empty">Nenhum usuário cadastrado.</td></tr>
+    </tbody>
+  </table></div></section>
+</main><div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

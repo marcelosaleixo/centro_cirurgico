@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Usuário do sistema')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container">
+  <div th:replace="~{fragments/layout :: mensagens}"></div>
+  <div class="page-heading"><div><p class="eyebrow">ADMINISTRAÇÃO DO SISTEMA</p>
+    <h1 th:text="${edicao ? 'Editar usuário' : 'Novo usuário'}"></h1>
+    <p class="muted">A senha deve ter no mínimo 12 caracteres. Ao editar, deixe a senha em branco para mantê-la.</p>
+  </div></div>
+  <section class="panel">
+    <form th:action="@{/admin/usuarios/salvar}" th:object="${usuario}" method="post" class="form-grid">
+      <input type="hidden" th:field="*{id}">
+      <div class="field"><label for="username">Nome de usuário</label>
+        <input id="username" type="text" th:field="*{username}" required minlength="3" maxlength="100" autocomplete="off"></div>
+      <div class="field"><label for="perfil">Perfil de acesso</label>
+        <select id="perfil" th:field="*{perfil}" required>
+          <option value="ADMIN_RH">Administrador do RH</option>
+          <option value="RH">RH</option>
+          <option value="CONSULTA">Consulta</option>
+        </select></div>
+      <div class="field"><label for="senha" th:text="${edicao ? 'Nova senha (opcional)' : 'Senha inicial'}"></label>
+        <input id="senha" type="password" th:field="*{senha}" th:required="${!edicao}" minlength="12" maxlength="100" autocomplete="new-password"></div>
+      <div class="field"><label><input type="checkbox" th:field="*{ativo}"> Usuário ativo</label></div>
+      <div class="form-actions"><button class="button primary" type="submit">Salvar usuário</button>
+        <a class="button" th:href="@{/admin/usuarios}">Cancelar</a></div>
+    </form>
+  </section>
+</main><div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

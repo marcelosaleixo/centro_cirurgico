@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Painel de segurança')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container">
+  <div th:replace="~{fragments/layout :: mensagens}"></div>
+  <div class="page-heading">
+    <div><p class="eyebrow">ADMINISTRAÇÃO DO SISTEMA</p><h1>Painel de segurança</h1>
+      <p class="muted">Contas temporariamente bloqueadas por tentativas de login inválidas.</p></div>
+  </div>
+  <section class="panel">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Usuário</th><th>Tentativas falhas</th><th>Bloqueado até</th><th>Desbloqueio manual</th></tr></thead>
+        <tbody>
+        <tr th:each="u : ${bloqueados}">
+          <td th:text="${u.username}"></td>
+          <td th:text="${u.tentativasFalhas}"></td>
+          <td th:text="${#temporals.format(u.bloqueadoAte, 'dd/MM/yyyy HH:mm:ss')}"></td>
+          <td>
+            <form th:action="@{/admin/seguranca/desbloquear/{id}(id=${u.id})}" method="post" class="form-grid">
+              <input type="text" name="justificativa" minlength="10" maxlength="500" required
+                     placeholder="Justificativa (mín. 10 caracteres)">
+              <button class="button small primary" type="submit"
+                      onclick="return confirm('Confirma o desbloqueio desta conta?')">Desbloquear</button>
+            </form>
+          </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(bloqueados)}"><td colspan="4" class="empty">Nenhuma conta está bloqueada neste momento.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+<div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body>
+</html>

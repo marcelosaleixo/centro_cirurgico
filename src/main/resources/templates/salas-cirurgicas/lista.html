@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Salas cirúrgicas')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container">
+  <div th:replace="~{fragments/layout :: mensagens}"></div>
+  <div class="page-heading"><div><p class="eyebrow">CENTRO CIRÚRGICO</p><h1>Salas cirúrgicas</h1><p class="muted">Cadastre e gerencie as salas utilizadas nas cirurgias e vinculadas aos armários.</p></div><a class="button primary" th:href="@{/salas-cirurgicas/nova}">+ Nova sala</a></div>
+  <section class="panel"><div class="table-wrap"><table>
+    <thead><tr><th>Nome da sala</th><th>Localização</th><th>Status</th><th>Ações</th></tr></thead>
+    <tbody><tr th:each="s : ${salas}"><td><strong th:text="${s.nome}"></strong></td><td th:text="${s.localizacao != null ? s.localizacao : '—'}"></td><td><span class="pill" th:text="${s.ativa ? 'ATIVA' : 'INATIVA'}"></span></td><td class="actions"><a class="button small" th:href="@{/salas-cirurgicas/{id}/editar(id=${s.id})}">Editar</a><form th:action="@{/salas-cirurgicas/{id}/alternar-status(id=${s.id})}" method="post"><button class="button small" type="submit" th:text="${s.ativa ? 'Desativar' : 'Ativar'}" th:onclick="|return confirm('Deseja alterar o status desta sala?')|"></button></form></td></tr>
+    <tr th:if="${#lists.isEmpty(salas)}"><td colspan="4" class="empty">Nenhuma sala cadastrada. Clique em “Nova sala” para começar.</td></tr></tbody>
+  </table></div></section>
+</main><div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

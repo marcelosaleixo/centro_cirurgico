@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${titulo})}"></head>
+<body><header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container narrow"><div th:replace="~{fragments/layout :: mensagens}"></div>
+<div class="page-heading"><div><p class="eyebrow">CADASTROS</p><h1 th:text="${titulo}">Função</h1></div><a class="button" th:href="@{/funcoes}">Voltar</a></div>
+<form class="panel form-grid" th:action="@{/funcoes/salvar}" th:object="${funcao}" method="post">
+<input type="hidden" th:field="*{id}">
+<label>Nome da função <span class="required">*</span><input th:field="*{nome}" required maxlength="100" placeholder="Ex.: Enfermeiro"></label>
+<label>Descrição<input th:field="*{descricao}" maxlength="255" placeholder="Descrição opcional"></label>
+<label class="checkbox"><input type="checkbox" th:field="*{ativo}"> Função ativa</label>
+<div class="form-actions"><button class="button primary" type="submit">Salvar</button><a class="button" th:href="@{/funcoes}">Cancelar</a></div>
+</form></main><div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

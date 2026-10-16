@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Dashboard gerencial')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container">
+  <div class="page-heading"><div>
+    <p class="eyebrow">VISÃO GERAL</p>
+    <h1>Dashboard gerencial</h1>
+    <p class="muted">Indicadores operacionais e tendências por período.</p>
+  </div></div>
+
+  <section class="panel" style="margin-bottom:1rem">
+    <h2>Filtrar período</h2>
+    <form method="get" th:action="@{/dashboard}" class="form-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;align-items:end">
+      <div><label for="inicio">Data inicial</label><input id="inicio" name="inicio" type="date" th:value="${inicio}" required></div>
+      <div><label for="fim">Data final</label><input id="fim" name="fim" type="date" th:value="${fim}" required></div>
+      <div class="form-actions"><button class="button" type="submit">Aplicar filtros</button><a class="button secondary" th:href="@{/dashboard}">Últimos 6 meses</a></div>
+    </form>
+    <p class="muted" th:text="|Período consultado: ${#temporals.format(inicio, 'dd/MM/yyyy')} a ${#temporals.format(fim, 'dd/MM/yyyy')}|">Período consultado</p>
+  </section>
+
+  <section class="panel" style="margin-bottom:1rem">
+    <div style="display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;justify-content:space-between">
+      <div><h2 style="margin-bottom:.25rem">Alertas operacionais</h2><p class="muted" style="margin:0">Situações que merecem acompanhamento; consulte o módulo para confirmar e tratar cada ocorrência.</p></div>
+      <span class="badge" th:text="|${quantidadeAlertasAlta} alerta(s) de alta prioridade|">0 alertas</span>
+    </div>
+    <div th:if="${#lists.isEmpty(alertasOperacionais)}" class="alert" style="margin-top:1rem">Nenhum alerta operacional identificado nas verificações disponíveis.</div>
+    <div th:each="alerta : ${alertasOperacionais}" style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:space-between;padding:1rem 0;border-bottom:1px solid var(--border-color, #ddd)">
+      <div style="flex:1;min-width:220px">
+        <p class="muted" style="margin:0 0 .25rem" th:text="${alerta.categoria}">Categoria</p>
+        <strong th:text="${alerta.titulo}">Título do alerta</strong>
+        <p style="margin:.25rem 0 0" th:text="${alerta.mensagem}">Detalhes</p>
+      </div>
+      <div style="display:flex;gap:.75rem;align-items:center">
+        <span th:text="${alerta.prioridade}" th:style="${alerta.prioridade == 'ALTA'} ? 'font-weight:700;color:#b91c1c' : 'font-weight:700;color:#1d4ed8'">Prioridade</span>
+        <a class="button secondary" th:href="${alerta.link}">Abrir módulo</a>
+      </div>
+    </div>
+    <p class="muted" style="margin-top:.75rem">Os alertas são informativos e não alteram automaticamente escalas ou quantidades de estoque.</p>
+  </section>
+
+  <section class="panel" style="margin-bottom:1rem">
+    <p class="muted" th:text="'Atualizado em ' + ${#temporals.format(dataAtualizacao, 'dd/MM/yyyy HH:mm')}">Atualização</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1rem">
+      <article class="panel"><p class="muted">Colaboradores ativos</p><h2 th:text="${colaboradoresAtivos}">0</h2><a th:href="@{/colaboradores}">Consultar colaboradores</a></article>
+      <article class="panel"><p class="muted">Colaboradores inativos</p><h2 th:text="${colaboradoresInativos}">0</h2><a th:href="@{/colaboradores}">Consultar cadastro</a></article>
+      <article class="panel"><p class="muted">Itens ativos no estoque</p><h2 th:text="${itensAtivos}">0</h2><a th:href="@{/estoque}">Abrir estoque</a></article>
+      <article class="panel"><p class="muted">Itens no mínimo ou abaixo</p><h2 th:text="${itensBaixoEstoque}">0</h2><a th:href="@{/estoque}">Verificar estoque</a></article>
+      <article class="panel"><p class="muted">Plantões até o fim do mês</p><h2 th:text="${plantoesRestantesMes}">0</h2><a th:href="@{/escalas}">Consultar escalas</a></article>
+      <article class="panel"><p class="muted">Operações nos últimos 7 dias</p><h2 th:text="${operacoesUltimosSeteDias}">0</h2><a th:href="@{/admin/auditoria-operacoes}">Consultar auditoria</a></article>
+    </div>
+  </section>
+
+  <section class="panel" style="margin-bottom:1rem">
+    <h2>Resumo do período selecionado</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1rem">
+      <article class="panel"><p class="muted">Operações auditadas</p><h2 th:text="${operacoesPeriodo}">0</h2></article>
+      <article class="panel"><p class="muted">Movimentações de estoque</p><h2 th:text="${movimentacoesPeriodo}">0</h2></article>
+      <article class="panel"><p class="muted">Plantões registrados</p><h2 th:text="${plantoesPeriodo}">0</h2></article>
+      <article class="panel"><p class="muted">Plantões programados</p><h2 th:text="${plantoesProgramados}">0</h2></article>
+    </div>
+  </section>
+
+  <section class="panel" style="margin-bottom:1rem">
+    <h2>Evolução mensal</h2>
+    <p class="muted">Comparação de operações auditadas, movimentações de estoque e escalas no período filtrado.</p>
+    <div th:if="${#lists.isEmpty(serieMensal)}" class="alert">Não há dados para o período selecionado.</div>
+    <div th:each="linha : ${serieMensal}" style="padding:1rem 0;border-bottom:1px solid var(--border-color, #ddd)">
+      <h3 th:text="${linha.rotulo}" style="margin:0 0 .75rem">Mês</h3>
+      <div style="display:grid;grid-template-columns:minmax(125px,170px) 1fr 3rem;gap:.5rem;align-items:center;margin:.35rem 0">
+        <span>Auditoria</span><div style="background:#e5e7eb;border-radius:8px;overflow:hidden;height:14px"><div style="height:14px;background:#2563eb" th:style="|width: ${linha.auditoria * 100 / maiorValorGrafico}%|"></div></div><strong th:text="${linha.auditoria}">0</strong>
+      </div>
+      <div style="display:grid;grid-template-columns:minmax(125px,170px) 1fr 3rem;gap:.5rem;align-items:center;margin:.35rem 0">
+        <span>Estoque</span><div style="background:#e5e7eb;border-radius:8px;overflow:hidden;height:14px"><div style="height:14px;background:#059669" th:style="|width: ${linha.movimentacoes * 100 / maiorValorGrafico}%|"></div></div><strong th:text="${linha.movimentacoes}">0</strong>
+      </div>
+      <div style="display:grid;grid-template-columns:minmax(125px,170px) 1fr 3rem;gap:.5rem;align-items:center;margin:.35rem 0">
+        <span>Escalas</span><div style="background:#e5e7eb;border-radius:8px;overflow:hidden;height:14px"><div style="height:14px;background:#d97706" th:style="|width: ${linha.escalas * 100 / maiorValorGrafico}%|"></div></div><strong th:text="${linha.escalas}">0</strong>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Acessos rápidos</h2>
+    <div class="form-actions">
+      <a class="button" th:href="@{/escalas}">Escalas de plantão</a>
+      <a class="button" th:href="@{/relatorios/fechamento-rh}">Fechamento do RH</a>
+      <a class="button" th:href="@{/estoque}">Gestão de estoque</a>
+      <a class="button" th:href="@{/ferias}">Férias</a>
+    </div>
+    <p class="muted" style="margin-top:1rem">Os indicadores refletem os dados existentes no banco; o dashboard não altera registros operacionais.</p>
+  </section>
+</main>
+<div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

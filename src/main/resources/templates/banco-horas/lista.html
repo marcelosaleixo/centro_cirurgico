@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Banco de horas')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container">
+  <div th:replace="~{fragments/layout :: mensagens}"></div>
+  <div class="page-heading">
+    <div><p class="eyebrow">RECURSOS HUMANOS</p><h1>Banco de horas</h1><p class="muted">Lance os dias de banco de horas. Ao gerar a escala 12x36, essas datas serão marcadas automaticamente.</p></div>
+    <a class="button primary" th:href="@{/banco-horas/novo}">+ Lançar banco de horas</a>
+  </div>
+  <section class="panel">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Colaborador</th><th>Data do banco</th><th>Horas</th><th>Motivo</th><th>Status</th><th>Ações</th></tr></thead>
+      <tbody>
+      <tr th:each="b : ${lancamentos}">
+        <td th:text="${b.colaborador.nome}"></td>
+        <td th:text="${#temporals.format(b.dataBanco, 'dd/MM/yyyy')}"></td>
+        <td th:text="${b.quantidadeHoras}"></td>
+        <td th:text="${b.motivo != null and !b.motivo.isBlank() ? b.motivo : '—'}"></td>
+        <td><span class="pill" th:text="${b.status}"></span></td>
+        <td class="actions">
+          <a class="button small" th:if="${b.status.name() == 'REGISTRADO'}" th:href="@{/banco-horas/{id}/editar(id=${b.id})}">Editar</a>
+          <form th:if="${b.status.name() == 'REGISTRADO'}" th:action="@{/banco-horas/{id}/cancelar(id=${b.id})}" method="post" onsubmit="return confirm('Cancelar este lançamento?')"><button class="button small danger" type="submit">Cancelar</button></form>
+        </td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(lancamentos)}"><td colspan="6" class="empty">Nenhum lançamento de banco de horas cadastrado.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+</main>
+<div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

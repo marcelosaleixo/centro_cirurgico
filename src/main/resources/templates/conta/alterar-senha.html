@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Alterar senha')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container">
+  <div th:replace="~{fragments/layout :: mensagens}"></div>
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">SEGURANÇA DA CONTA</p>
+      <h1>Alterar minha senha</h1>
+      <p class="muted">Usuário: <strong th:text="${username}"></strong></p>
+    </div>
+  </div>
+  <section class="panel">
+    <form th:action="@{/minha-conta/senha}" method="post" class="form-grid">
+      <div class="field">
+        <label for="senhaAtual">Senha atual</label>
+        <input id="senhaAtual" name="senhaAtual" type="password" required autocomplete="current-password">
+      </div>
+      <div class="field">
+        <label for="novaSenha">Nova senha</label>
+        <input id="novaSenha" name="novaSenha" type="password" required minlength="12" maxlength="100" autocomplete="new-password">
+        <small>Use pelo menos 12 caracteres.</small>
+      </div>
+      <div class="field">
+        <label for="confirmarSenha">Confirme a nova senha</label>
+        <input id="confirmarSenha" name="confirmarSenha" type="password" required minlength="12" maxlength="100" autocomplete="new-password">
+      </div>
+      <div class="form-actions">
+        <button class="button primary" type="submit">Alterar senha</button>
+        <a class="button" th:href="@{/}">Cancelar</a>
+      </div>
+    </form>
+  </section>
+</main>
+<div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body>
+</html>

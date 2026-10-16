@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Auditoria de operações')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container">
+  <div class="page-heading"><div>
+    <p class="eyebrow">ADMINISTRAÇÃO DO SISTEMA</p>
+    <h1>Auditoria de operações</h1>
+    <p class="muted">Registros de requisições que alteram dados. O conteúdo de formulários e senhas não é armazenado.</p>
+  </div></div>
+  <section class="panel"><div class="table-wrap"><table>
+    <thead><tr><th>Data e hora</th><th>Usuário</th><th>Método</th><th>Recurso</th><th>HTTP</th><th>Resultado</th></tr></thead>
+    <tbody>
+      <tr th:each="r : ${registros}">
+        <td th:text="${#temporals.format(r.ocorridoEm, 'dd/MM/yyyy HH:mm:ss')}"></td>
+        <td th:text="${r.usuario}"></td><td th:text="${r.metodo}"></td><td th:text="${r.recurso}"></td>
+        <td th:text="${r.codigoHttp}"></td><td><span class="pill" th:text="${r.sucesso ? 'SUCESSO' : 'FALHA'}"></span></td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(registros)}"><td colspan="6" class="empty">Nenhuma operação registrada.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="form-actions" style="margin-top:1rem">
+    <a class="button" th:if="${temAnterior}" th:href="@{/admin/auditoria-operacoes(pagina=${paginaAtual - 1})}">Anterior</a>
+    <span th:text="'Página ' + (${totalPaginas == 0 ? 0 : paginaAtual + 1}) + ' de ' + ${totalPaginas}"></span>
+    <a class="button" th:if="${temProxima}" th:href="@{/admin/auditoria-operacoes(pagina=${paginaAtual + 1})}">Próxima</a>
+  </div></section>
+</main><div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

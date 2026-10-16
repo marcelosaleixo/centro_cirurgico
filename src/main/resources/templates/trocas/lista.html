@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Trocas de plantão')}"></head><body>
+<header th:replace="~{fragments/layout :: navbar}"></header><main class="container">
+<div th:replace="~{fragments/layout :: mensagens}"></div><div class="page-heading"><div><p class="eyebrow">RECURSOS HUMANOS</p><h1>Trocas de plantão</h1><p class="muted">Solicitações e decisões da chefia; os envolvidos devem ter a mesma função.</p></div><a class="button primary" th:href="@{/trocas/nova}">+ Solicitar troca</a></div>
+<section class="panel"><div class="table-wrap"><table><thead><tr><th>Solicitante</th><th>Aceitante</th><th>Plantão original</th><th>Data alternativa</th><th>Motivo</th><th>Status</th><th>Decisão por</th><th>Ações</th></tr></thead><tbody>
+<tr th:each="t : ${trocas}"><td th:text="${t.solicitante.nome}"></td><td th:text="${t.aceitante.nome}"></td><td th:text="${#temporals.format(t.dataPlantaoOriginal,'dd/MM/yyyy')}"></td><td th:text="${t.dataPlantaoDestino != null ? #temporals.format(t.dataPlantaoDestino,'dd/MM/yyyy') : '—'}"></td><td th:text="${t.motivo}"></td><td><span class="pill" th:text="${t.statusAprovacao}"></span></td><td th:text="${t.aprovadoPor != null ? t.aprovadoPor.nome : '—'}"></td><td class="actions">
+<form th:if="${t.statusAprovacao.name() == 'PENDENTE'}" th:action="@{/trocas/{id}/aprovar(id=${t.id})}" method="post" class="inline-action"><select name="aprovadorId" required><option value="">Aprovador...</option><option th:each="a : ${aprovadores}" th:value="${a.id}" th:text="${a.nome}"></option></select><button class="button small primary">Aprovar</button></form>
+<form th:if="${t.statusAprovacao.name() == 'PENDENTE'}" th:action="@{/trocas/{id}/rejeitar(id=${t.id})}" method="post" class="inline-action"><select name="aprovadorId" required><option value="">Responsável...</option><option th:each="a : ${aprovadores}" th:value="${a.id}" th:text="${a.nome}"></option></select><button class="button small danger">Rejeitar</button></form>
+<form th:if="${t.statusAprovacao.name() == 'PENDENTE'}" th:action="@{/trocas/{id}/cancelar(id=${t.id})}" method="post"><button class="button small">Cancelar</button></form></td></tr>
+<tr th:if="${#lists.isEmpty(trocas)}"><td colspan="8" class="empty">Nenhuma troca cadastrada.</td></tr>
+</tbody></table></div></section></main><div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

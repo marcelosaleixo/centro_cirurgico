@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Cadastro de feriados')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container">
+  <div th:replace="~{fragments/layout :: mensagens}"></div>
+  <div class="page-heading">
+    <div><p class="eyebrow">CONFIGURAÇÃO DE CALENDÁRIO</p><h1>Feriados</h1>
+      <p class="muted">Cadastre feriados nacionais, estaduais, municipais e pontos facultativos. A geração da escala consulta os feriados ativos.</p></div>
+    <a class="button primary" th:href="@{/feriados/novo}">+ Novo feriado</a>
+  </div>
+  <section class="panel"><div class="table-wrap"><table>
+    <thead><tr><th>Data</th><th>Dia da semana</th><th>Feriado</th><th>Abrangência</th><th>Localidade</th><th>Regra operacional</th><th>Adicional</th><th>Recorrente</th><th>Status</th><th>Ações</th></tr></thead>
+    <tbody>
+    <tr th:each="f : ${feriados}">
+      <td th:text="${#temporals.format(f.data, 'dd/MM/yyyy')}"></td>
+      <td th:text="${#temporals.format(f.data, 'EEEE', new java.util.Locale('pt','BR'))}"></td>
+      <td><strong th:text="${f.nome}"></strong><small class="table-subtext" th:if="${f.observacao != null and !f.observacao.isBlank()}" th:text="${f.observacao}"></small></td>
+      <td th:text="${f.abrangencia}"></td>
+      <td th:text="${(f.municipio != null ? f.municipio : '') + (f.uf != null ? ' / ' + f.uf : '')}"></td>
+      <td th:text="${f.regraOperacional}"></td>
+      <td th:text="${f.percentualAdicional != null ? f.percentualAdicional + '%' : '—'}"></td>
+      <td th:text="${f.recorrenteAnual ? 'Sim' : 'Não'}"></td>
+      <td><span class="pill" th:text="${f.ativo ? 'ATIVO' : 'INATIVO'}"></span></td>
+      <td class="actions"><a class="button small" th:href="@{/feriados/{id}/editar(id=${f.id})}">Editar</a>
+        <form th:if="${f.ativo}" th:action="@{/feriados/{id}/inativar(id=${f.id})}" method="post" onsubmit="return confirm('Inativar este feriado?')">
+          <button class="button small danger" type="submit">Inativar</button></form></td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(feriados)}"><td colspan="10" class="empty">Nenhum feriado cadastrado.</td></tr>
+    </tbody>
+  </table></div></section>
+</main><div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

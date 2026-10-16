@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Fechamento mensal do RH')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container closing-rh-page">
+  <section class="page-heading">
+    <p class="eyebrow">RECURSOS HUMANOS</p>
+    <h1>Fechamento mensal do RH</h1>
+    <p>Confira cada colaborador, registre divergências e acompanhe as pendências antes de concluir o fechamento.</p>
+  </section>
+  <div th:replace="~{fragments/layout :: mensagens}"></div>
+  <section class="panel closing-filter-panel">
+    <div class="section-title-row"><div><h2>Consultar período</h2><p class="muted">Selecione o intervalo para conferir as horas e os plantões.</p></div></div>
+    <form method="get" th:action="@{/relatorios/fechamento-rh}" class="filters">
+      <label>Data inicial<input type="date" name="inicio" th:value="${inicio}" required></label>
+      <label>Data final<input type="date" name="fim" th:value="${fim}" required></label>
+      <button type="submit" class="button primary">Consultar</button>
+      <a class="button secondary" th:href="@{/relatorios/fechamento-rh/excel(inicio=${inicio},fim=${fim})}">Exportar Excel</a>
+    </form>
+  </section>
+  <section class="panel closing-state-panel">
+    <div class="section-title-row"><div><p class="eyebrow">SITUAÇÃO DO PROCESSAMENTO</p><h2>Estado do período</h2></div><span th:class="${fechamento != null and fechamento.status == 'FECHADO' ? 'status-badge status-closed' : 'status-badge status-open'}" th:text="${fechamento != null and fechamento.status == 'FECHADO' ? 'FECHADO' : 'ABERTO'}">ABERTO</span></div>
+    <p th:if="${fechamento == null or fechamento.status == 'ABERTO'}" class="muted">Período aberto: as conferências podem ser atualizadas.</p>
+    <p th:if="${fechamento != null and fechamento.status == 'FECHADO'}"><strong>Fechamento concluído</strong> em <span th:text="${#temporals.format(fechamento.fechadoEm, 'dd/MM/yyyy HH:mm')}">data</span>. As conferências estão bloqueadas.</p>
+    <p th:if="${fechamento != null and fechamento.observacaoFechamento != null}" th:text="${fechamento.observacaoFechamento}"></p>
+    <form th:if="${fechamento != null and fechamento.status == 'FECHADO'}" method="post" th:action="@{/relatorios/fechamento-rh/reabrir}" class="stack-form">
+      <input type="hidden" name="inicio" th:value="${inicio}">
+      <input type="hidden" name="fim" th:value="${fim}">
+      <label>Justificativa obrigatória para reabertura
+        <textarea name="justificativa" rows="3" minlength="10" maxlength="1000" required placeholder="Explique por que este período precisa ser reaberto"></textarea>
+      </label>
+      <button type="submit" class="button secondary">Reabrir período</button>
+      <p class="muted">A reabertura será registrada no histórico de auditoria. A autorização por perfil de usuário deve ser configurada conforme a segurança da aplicação.</p>
+    </form>
+    <form th:if="${fechamento == null or fechamento.status != 'FECHADO'}" method="post" th:action="@{/relatorios/fechamento-rh/fechar}" class="stack-form">
+      <input type="hidden" name="inicio" th:value="${inicio}"><input type="hidden" name="fim" th:value="${fim}">
+      <label>Observação do fechamento<textarea name="observacao" rows="2" maxlength="1000" placeholder="Observações finais (opcional)"></textarea></label>
+      <button type="submit" class="button primary">Concluir fechamento do período</button>
+      <p class="muted">Só será possível concluir quando todas as pessoas listadas estiverem como “Conferido”. Depois de fechado, o período fica bloqueado para novas alterações.</p>
+    </form>
+  </section>
+  <section class="panel closing-table-panel">
+    <div class="section-title-row"><div><p class="eyebrow">CONFERÊNCIA MENSAL</p><h2>Resumo por colaborador</h2><p class="muted">Role horizontalmente para consultar todas as colunas. Em celulares, os controles ficam abaixo dos dados.</p></div></div>
+    <div class="table-wrap closing-table-wrap">
+      <table class="closing-table">
+        <thead><tr>
+          <th>Colaborador</th><th>Função</th><th>Equipe</th><th>Programados</th><th>Realizados</th>
+          <th>Horas previstas</th><th>Horas realizadas</th><th>Férias</th><th>Banco de horas</th><th>Cancelados</th><th>Fins de semana</th><th>Feriados identificados</th><th>Conferência individual</th>
+        </tr></thead>
+        <tbody>
+        <tr th:each="r : ${resumos}">
+          <td th:text="${r.colaborador.nome}">Colaborador</td>
+          <td th:text="${r.colaborador.funcao != null ? r.colaborador.funcao.nome : '-'}">Função</td>
+          <td th:text="${r.colaborador.equipe != null ? r.colaborador.equipe.nome : '-'}">Equipe</td>
+          <td th:text="${r.plantoesProgramados}">0</td><td th:text="${r.plantoesRealizados}">0</td>
+          <td th:text="${r.horasPrevistasFormatadas}">00:00</td><td th:text="${r.horasRealizadasFormatadas}">00:00</td>
+          <td th:text="${r.ferias}">0</td><td th:text="${r.bancoHoras}">0</td><td th:text="${r.cancelados}">0</td>
+          <td th:text="${r.finaisDeSemana}">0</td><td th:text="${r.feriadosIdentificados}">0</td>
+          <td style="min-width:250px">
+            <form th:if="${fechamento == null or fechamento.status != 'FECHADO'}" method="post" th:action="@{/relatorios/fechamento-rh/conferencia/{id}(id=${r.colaborador.id})}" class="stack-form">
+              <input type="hidden" name="inicio" th:value="${inicio}"><input type="hidden" name="fim" th:value="${fim}">
+              <label>Status
+                <select name="status" required>
+                  <option value="PENDENTE" th:selected="${r.statusConferencia == 'PENDENTE'}">Pendente</option>
+                  <option value="CONFERIDO" th:selected="${r.statusConferencia == 'CONFERIDO'}">Conferido</option>
+                  <option value="DIVERGENCIA" th:selected="${r.statusConferencia == 'DIVERGENCIA'}">Com divergência</option>
+                </select>
+              </label>
+              <label>Observação<textarea name="observacao" rows="2" maxlength="1000" th:text="${r.observacaoConferencia}" placeholder="Descreva a pendência, se houver"></textarea></label>
+              <button type="submit" class="button primary">Salvar conferência</button>
+            </form>
+            <span th:if="${fechamento != null and fechamento.status == 'FECHADO'}" class="muted">Período fechado — edição bloqueada.</span>
+          </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(resumos)}"><td colspan="13">Nenhuma escala encontrada para o período selecionado.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="muted">A conferência fica salva por período e colaborador. O fechamento concluído bloqueia alterações neste período. Este relatório é operacional e não substitui a validação das regras oficiais da folha de pagamento.</p>
+  </section>
+
+  <section class="panel closing-history-panel">
+    <div class="section-title-row"><div><p class="eyebrow">RASTREABILIDADE</p><h2>Histórico de auditoria</h2></div></div>
+    <p class="muted">Registro das alterações de conferência e do fechamento deste intervalo.</p>
+    <div class="table-wrap" th:if="${historicoAuditoria != null and !historicoAuditoria.isEmpty()}">
+      <table>
+        <thead><tr><th>Data e hora</th><th>Ação</th><th>Colaborador</th><th>Alteração</th><th>Detalhe</th></tr></thead>
+        <tbody>
+          <tr th:each="evento : ${historicoAuditoria}">
+            <td th:text="${#temporals.format(evento.criadoEm, 'dd/MM/yyyy HH:mm')}">data</td>
+            <td th:text="${evento.acao}">ação</td>
+            <td th:text="${evento.colaboradorNome != null ? evento.colaboradorNome : '-'}">-</td>
+            <td><span th:text="${evento.statusAnterior != null ? evento.statusAnterior : '—'}">—</span> → <span th:text="${evento.statusNovo != null ? evento.statusNovo : '—'}">—</span></td>
+            <td th:text="${evento.detalhe != null ? evento.detalhe : '-'}">-</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="muted" th:if="${historicoAuditoria == null or historicoAuditoria.isEmpty()}">Ainda não existem eventos registrados para este período.</p>
+  </section>
+
+</main>
+<div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Cadastro de feriado')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container">
+  <div th:replace="~{fragments/layout :: mensagens}"></div>
+  <div class="page-heading"><div><p class="eyebrow">CONFIGURAÇÃO DE CALENDÁRIO</p>
+    <h1 th:text="${feriado.id == null ? 'Novo feriado' : 'Editar feriado'}">Novo feriado</h1>
+    <p class="muted">Para recorrência anual, será usado o mesmo dia e mês nos anos seguintes.</p></div>
+    <a class="button" th:href="@{/feriados}">Voltar</a></div>
+  <section class="panel"><form method="post" th:action="@{/feriados/salvar}" th:object="${feriado}" class="form-grid">
+    <input type="hidden" th:field="*{id}">
+    <label>Nome do feriado *<input type="text" th:field="*{nome}" maxlength="150" required placeholder="Ex.: Aniversário de Campo Verde"></label>
+    <label>Data *<input type="date" th:field="*{data}" required></label>
+    <label>Abrangência *<select th:field="*{abrangencia}" required><option th:each="a : ${abrangencias}" th:value="${a}" th:text="${a}"></option></select></label>
+    <label>Município<input type="text" th:field="*{municipio}" maxlength="100" placeholder="Ex.: Campo Verde"></label>
+    <label>UF<input type="text" th:field="*{uf}" maxlength="2" placeholder="Ex.: MT"></label>
+    <label>Regra operacional *<select th:field="*{regraOperacional}" required><option th:each="r : ${regrasOperacionais}" th:value="${r}" th:text="${r}"></option></select></label>
+    <label>Adicional de pagamento (%)<input type="number" th:field="*{percentualAdicional}" min="0" max="999.99" step="0.01" placeholder="Ex.: 100"><small class="muted">Preencha apenas quando a regra for PAGAMENTO_DIFERENCIADO. Confirme o percentual aplicável com o RH/contabilidade.</small></label>
+    <label class="checkbox-label"><input type="checkbox" th:field="*{recorrenteAnual}"> Repetir todos os anos (mesmo dia e mês)</label>
+    <label class="checkbox-label"><input type="checkbox" th:field="*{ativo}"> Feriado ativo</label>
+    <label class="full-width">Observação<textarea th:field="*{observacao}" maxlength="500" rows="3"></textarea></label>
+    <div class="form-actions full-width"><button class="button primary" type="submit">Salvar feriado</button><a class="button" th:href="@{/feriados}">Cancelar</a></div>
+  </form></section>
+</main><div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

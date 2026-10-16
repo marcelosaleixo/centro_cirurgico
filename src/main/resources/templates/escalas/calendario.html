@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Calendário de escalas')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container">
+  <div th:replace="~{fragments/layout :: mensagens}"></div>
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">RECURSOS HUMANOS</p>
+      <h1>Calendário de escalas</h1>
+      <p class="muted">Visualize os plantões, jornadas 5x2, férias e banco de horas por dia.</p>
+    </div>
+    <div class="actions">
+      <a class="button" th:href="@{/escalas}">Lista de escalas</a>
+      <a class="button primary" th:href="@{/escalas/nova}">+ Nova escala</a>
+    </div>
+  </div>
+
+  <section class="panel calendar-filter">
+    <form class="searchbar" method="get" th:action="@{/escalas/calendario}">
+      <label>Mês
+        <input type="month" name="mes" th:value="${mesReferencia}" required>
+      </label>
+      <label>Colaborador
+        <select name="colaboradorId">
+          <option value="">Todos os colaboradores</option>
+          <option th:each="c : ${colaboradores}" th:value="${c.id}"
+                  th:selected="${colaboradorId != null and colaboradorId == c.id}"
+                  th:text="${c.nome}"></option>
+        </select>
+      </label>
+      <button class="button primary" type="submit">Aplicar filtros</button>
+    </form>
+  </section>
+
+  <section class="panel calendar-generate-panel">
+    <div>
+      <h2>Preencher o calendário</h2>
+      <p class="muted">Gere as escalas do mês para todos os colaboradores ativos ou somente para o colaborador selecionado no filtro. Os registros existentes e cancelados são respeitados.</p>
+    </div>
+    <form method="post" th:action="@{/escalas/calendario/gerar}" class="calendar-generate-form"
+          onsubmit="return confirm('Deseja gerar as escalas do mês selecionado? Os registros existentes não cancelados poderão ser atualizados para refletir férias e banco de horas.');">
+      <input type="hidden" name="mes" th:value="${mesReferencia}">
+      <input type="hidden" name="colaboradorId" th:value="${colaboradorId}" th:if="${colaboradorId != null}">
+      <button class="button primary" type="submit">
+        <span th:if="${colaboradorId == null}">Gerar escala para todos os colaboradores</span>
+        <span th:if="${colaboradorId != null}">Gerar escala do colaborador selecionado</span>
+      </button>
+    </form>
+  </section>
+
+  <section class="panel">
+    <div class="calendar-toolbar">
+      <a class="button" th:href="@{/escalas/calendario(mes=${mesAnterior},colaboradorId=${colaboradorId})}">← Anterior</a>
+      <h2 th:text="${#temporals.format(mesReferencia.atDay(1), 'MMMM yyyy', new java.util.Locale('pt','BR'))}">Mês</h2>
+      <a class="button" th:href="@{/escalas/calendario(mes=${proximoMes},colaboradorId=${colaboradorId})}">Próximo →</a>
+    </div>
+    <div class="calendar-legend">
+      <span><i class="legend-dot programmed"></i> Programado</span>
+      <span><i class="legend-dot vacation"></i> Férias</span>
+      <span><i class="legend-dot bank"></i> Banco de horas</span>
+      <span><i class="legend-dot cancelled"></i> Cancelado</span>
+      <span><i class="legend-dot completed"></i> Realizado</span>
+    </div>
+    <div class="calendar-grid">
+      <div class="calendar-weekday">Seg</div><div class="calendar-weekday">Ter</div>
+      <div class="calendar-weekday">Qua</div><div class="calendar-weekday">Qui</div>
+      <div class="calendar-weekday">Sex</div><div class="calendar-weekday">Sáb</div>
+      <div class="calendar-weekday">Dom</div>
+      <th:block th:each="semana : ${semanas}">
+        <div th:each="dia : ${semana}"
+             class="calendar-day"
+             th:classappend="${!dia.mesAtual ? ' outside-month' : ''} + (${dia.fimDeSemana} ? ' weekend' : '') + (${dia.feriadoNome != null ? ' holiday-day' : ''})"
+             th:title="${dia.feriadoNome != null ? dia.feriadoNome : dia.diaSemana}">
+          <div class="calendar-day-number" th:text="${dia.data.dayOfMonth}">1</div>
+          <div class="calendar-day-label" th:text="${dia.diaSemana}">segunda-feira</div>
+          <div th:if="${dia.feriadoNome != null}" class="calendar-holiday-label" th:text="${dia.feriadoNome}">Feriado</div>
+          <div th:if="${!dia.semEscalas}" class="calendar-events">
+            <article th:each="e : ${dia.escalas}"
+                     class="calendar-event"
+                     th:classappend="${e.status.name() == 'FERIAS' ? ' event-vacation' : (e.status.name() == 'BANCO_HORAS' ? ' event-bank' : (e.status.name() == 'CANCELADO' ? ' event-cancelled' : (e.status.name() == 'REALIZADO' ? ' event-completed' : ' event-programmed')))}">
+              <strong th:text="${e.colaborador.nome}">Colaborador</strong>
+              <span th:text="${e.status}">PROGRAMADO</span>
+              <small th:text="${e.horaInicio + '–' + e.horaFim}">07:00–17:00</small>
+              <small th:if="${e.horaInicioIntervalo != null and e.horaFimIntervalo != null}"
+                     th:text="${'Almoço ' + e.horaInicioIntervalo + '–' + e.horaFimIntervalo}">Almoço</small>
+              <a th:href="@{/escalas/{id}/editar(id=${e.id})}">Editar</a>
+            </article>
+          </div>
+          <div th:if="${!dia.trocas.isEmpty()}" class="calendar-events calendar-exchanges">
+            <article th:each="troca : ${dia.trocas}"
+                     class="calendar-event event-exchange"
+                     th:classappend="${troca.statusAprovacao.name() == 'APROVADA' ? ' exchange-approved' : (troca.statusAprovacao.name() == 'PENDENTE' ? ' exchange-pending' : ' exchange-other')}">
+              <strong><span aria-hidden="true">⇄ </span>Troca de plantão</strong>
+              <span class="exchange-status" th:text="${troca.statusAprovacao}">APROVADA</span>
+              <small th:text="${'Solicitante: ' + troca.solicitante.nome}">Solicitante</small>
+              <small th:text="${'Aceitante: ' + troca.aceitante.nome}">Aceitante</small>
+              <small th:if="${troca.dataPlantaoOriginal != null and troca.dataPlantaoOriginal.equals(dia.data)}">Data do plantão original</small>
+              <small th:if="${troca.dataPlantaoDestino != null and troca.dataPlantaoDestino.equals(dia.data)}">Data de destino da troca</small>
+              <small th:if="${troca.statusAprovacao.name() == 'APROVADA'}">Aprovada pela chefia</small>
+              <small th:if="${troca.statusAprovacao.name() == 'PENDENTE'}">Aguardando aprovação</small>
+              <a th:href="@{/trocas}">Ver troca</a>
+            </article>
+          </div>
+          <div th:if="${dia.semEventos and dia.fimDeSemana}" class="calendar-rest">Descanso</div>
+        </div>
+      </th:block>
+    </div>
+  </section>
+</main>
+<div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body>
+</html>

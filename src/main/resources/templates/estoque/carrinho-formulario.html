@@ -1,0 +1,5 @@
+<!DOCTYPE html><html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments/layout :: head(${titulo})}"></head><body><header th:replace="~{fragments/layout :: navbar}"></header><main class="container narrow"><div th:replace="~{fragments/layout :: mensagens}"></div><div class="page-heading"><div><p class="eyebrow">SUPRIMENTOS</p><h1 th:text="${titulo}"></h1></div><a class="button" th:href="@{/estoque/recursos}">Voltar</a></div>
+<form class="panel form-grid" th:action="@{/estoque/recursos/carrinhos/salvar}" th:object="${form}" method="post"><input type="hidden" th:field="*{id}">
+<label>Código <span class="required">*</span><input th:field="*{codigo}" maxlength="60" required></label><label>Nome <span class="required">*</span><input th:field="*{nome}" maxlength="120" required></label><label>Localização<input th:field="*{localizacao}" maxlength="160" placeholder="Ex.: Sala de recuperação"></label>
+<div class="form-actions"><button class="button primary">Salvar carrinho</button><a class="button" th:href="@{/estoque/recursos}">Cancelar</a></div></form></main><div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

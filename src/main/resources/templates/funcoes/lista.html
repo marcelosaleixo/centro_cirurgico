@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Funções profissionais')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container">
+  <div th:replace="~{fragments/layout :: mensagens}"></div>
+  <div class="page-heading"><div><p class="eyebrow">RECURSOS HUMANOS</p><h1>Funções profissionais</h1><p class="muted">Cadastre os cargos e funções dos colaboradores.</p></div><a class="button primary" th:href="@{/funcoes/nova}">+ Nova função</a></div>
+  <section class="panel">
+    <div class="table-wrap"><table><thead><tr><th>Nome</th><th>Descrição</th><th>Ativa</th><th>Ações</th></tr></thead>
+    <tbody><tr th:each="f : ${funcoes}"><td th:text="${f.nome}"></td><td th:text="${f.descricao ?: '—'}"></td><td><span class="pill" th:text="${f.ativo ? 'Sim' : 'Não'}"></span></td><td class="actions"><a class="button small" th:href="@{/funcoes/{id}/editar(id=${f.id})}">Editar</a><form th:action="@{/funcoes/{id}/excluir(id=${f.id})}" method="post" onsubmit="return confirm('Excluir esta função?')"><button class="button small danger" type="submit">Excluir</button></form></td></tr>
+    <tr th:if="${#lists.isEmpty(funcoes)}"><td colspan="4" class="empty">Nenhuma função cadastrada.</td></tr></tbody></table></div>
+  </section>
+</main><div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

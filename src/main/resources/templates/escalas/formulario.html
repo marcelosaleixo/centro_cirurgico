@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Cadastro de escala')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container narrow">
+  <div th:replace="~{fragments/layout :: mensagens}"></div>
+  <div class="page-heading"><div><p class="eyebrow">RECURSOS HUMANOS</p><h1 th:text="${form.id == null ? 'Nova escala' : 'Editar escala'}">Escala</h1><p class="muted">Os horários e dias permitidos dependem do regime de trabalho cadastrado para o colaborador.</p></div><a class="button" th:href="@{/escalas}">Voltar</a></div>
+  <form class="panel form-grid" th:action="@{/escalas/salvar}" th:object="${form}" method="post">
+    <input type="hidden" th:field="*{id}">
+    <label>Colaborador <span class="required">*</span><select th:field="*{colaboradorId}" required><option value="">Selecione...</option><option th:each="c : ${colaboradores}" th:value="${c.id}" th:text="${c.nome + ' — ' + c.plantaoReferencia}"></option></select></label>
+    <label>Data do plantão <span class="required">*</span>
+      <input id="dataPlantao"
+             name="dataPlantao"
+             type="date"
+             th:value="${form.dataPlantao != null ? #temporals.format(form.dataPlantao, 'yyyy-MM-dd') : ''}"
+             required>
+    </label>
+    <label>Horário de início <span class="required">*</span><input id="horaInicio" type="time" th:field="*{horaInicio}" required></label>
+    <label>Horário de fim <span class="required">*</span><input id="horaFim" type="time" th:field="*{horaFim}" required></label>
+    <label id="intervaloInicioLabel">Início do intervalo (almoço)<input id="horaInicioIntervalo" type="time" th:field="*{horaInicioIntervalo}"></label>
+    <label id="intervaloFimLabel">Fim do intervalo (almoço)<input id="horaFimIntervalo" type="time" th:field="*{horaFimIntervalo}"></label>
+    <label>Classificação do plantão <span class="required">*</span><select th:field="*{tipoPlantao}" required><option value="">Selecione...</option><option th:each="p : ${tiposPlantao}" th:value="${p}" th:text="${p}"></option></select></label>
+    <label>Status<select th:field="*{status}"><option th:each="s : ${statusEscala}" th:value="${s}" th:text="${s}"></option></select></label>
+    <label>Observação<input th:field="*{observacao}" maxlength="500" placeholder="Observação opcional"></label>
+    <div class="form-actions"><button class="button primary" type="submit">Salvar escala</button><a class="button" th:href="@{/escalas}">Cancelar</a></div>
+  </form>
+</main>
+<script>
+(function () {
+  const inicio = document.getElementById('horaInicio');
+  const fim = document.getElementById('horaFim');
+  const li = document.getElementById('intervaloInicioLabel');
+  const lf = document.getElementById('intervaloFimLabel');
+  function atualizar() {
+    const jornada5x2 = inicio && fim && inicio.value === '07:00' && fim.value === '17:00';
+    li.style.display = jornada5x2 ? '' : 'none';
+    lf.style.display = jornada5x2 ? '' : 'none';
+  }
+  inicio?.addEventListener('change', atualizar);
+  fim?.addEventListener('change', atualizar);
+  atualizar();
+})();
+</script>
+<div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

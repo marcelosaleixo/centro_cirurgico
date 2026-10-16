@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Lançamento de banco de horas')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container narrow">
+  <div th:replace="~{fragments/layout :: mensagens}"></div>
+  <div class="page-heading"><div><p class="eyebrow">RECURSOS HUMANOS</p><h1 th:text="${form.id == null ? 'Lançar banco de horas' : 'Editar banco de horas'}"></h1><p class="muted">A data não pode coincidir com férias solicitadas/aprovadas nem ter outro lançamento ativo.</p></div><a class="button" th:href="@{/banco-horas}">Voltar</a></div>
+  <form class="panel form-grid" th:action="@{/banco-horas/salvar}" th:object="${form}" method="post">
+    <input type="hidden" th:field="*{id}">
+    <label>Colaborador <span class="required">*</span><select th:field="*{colaboradorId}" required><option value="">Selecione...</option><option th:each="c : ${colaboradores}" th:value="${c.id}" th:text="${c.nome + ' — ' + c.plantaoReferencia}"></option></select></label>
+    <label>Data do banco de horas <span class="required">*</span><input type="date" th:field="*{dataBanco}" required></label>
+    <label>Quantidade de horas <span class="required">*</span><input type="number" th:field="*{quantidadeHoras}" min="0.01" max="24" step="0.01" required><small class="hint">Para um plantão completo de 12 horas, mantenha 12,00.</small></label>
+    <label>Motivo / observação<textarea th:field="*{motivo}" maxlength="500" rows="3" placeholder="Ex.: compensação de horas"></textarea></label>
+    <div class="form-actions"><button class="button primary" type="submit">Salvar lançamento</button><a class="button" th:href="@{/banco-horas}">Cancelar</a></div>
+  </form>
+</main>
+<div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

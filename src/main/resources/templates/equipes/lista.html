@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Equipes')}"></head><body>
+<header th:replace="~{fragments/layout :: navbar}"></header><main class="container">
+<div th:replace="~{fragments/layout :: mensagens}"></div>
+<div class="page-heading"><div><p class="eyebrow">RECURSOS HUMANOS</p><h1>Equipes</h1><p class="muted">Organize os colaboradores por equipe.</p></div><a class="button primary" th:href="@{/equipes/nova}">+ Nova equipe</a></div>
+<section class="panel"><div class="table-wrap"><table><thead><tr><th>Nome</th><th>Descrição</th><th>Colaboradores</th><th>Ativa</th><th>Ações</th></tr></thead><tbody>
+<tr th:each="e : ${equipes}"><td th:text="${e.nome}"></td><td th:text="${e.descricao ?: '—'}"></td><td th:text="${quantidadeColaboradores[e.id] != null ? quantidadeColaboradores[e.id] : 0}"></td><td th:text="${e.ativo ? 'Sim' : 'Não'}"></td><td class="actions"><a class="button small" th:href="@{/equipes/{id}/editar(id=${e.id})}">Editar</a><form th:action="@{/equipes/{id}/excluir(id=${e.id})}" method="post" onsubmit="return confirm('Excluir esta equipe?')"><button class="button small danger" type="submit">Excluir</button></form></td></tr>
+<tr th:if="${#lists.isEmpty(equipes)}"><td colspan="5" class="empty">Nenhuma equipe cadastrada.</td></tr></tbody></table></div></section>
+</main><div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

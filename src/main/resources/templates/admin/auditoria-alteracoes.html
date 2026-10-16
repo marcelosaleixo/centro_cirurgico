@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Histórico detalhado de alterações')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container">
+  <div class="page-heading"><div>
+    <p class="eyebrow">ADMINISTRAÇÃO DO SISTEMA</p>
+    <h1>Histórico detalhado de alterações</h1>
+    <p class="muted">Pesquise por período, usuário, módulo/entidade e operação. Valores sensíveis não devem ser registrados nesta trilha.</p>
+  </div></div>
+  <section class="panel">
+    <form method="get" th:action="@{/admin/auditoria-alteracoes}" class="form-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;align-items:end;margin-bottom:1rem">
+      <label>Usuário
+        <input type="text" name="usuario" maxlength="100" th:value="${filtroUsuario}" placeholder="Parte do nome de usuário">
+      </label>
+      <label>Entidade / módulo
+        <input type="text" name="entidade" maxlength="100" th:value="${filtroEntidade}" placeholder="Ex.: Colaborador, Estoque">
+      </label>
+      <label>Operação
+        <input type="text" name="operacao" maxlength="20" th:value="${filtroOperacao}" placeholder="Ex.: EDICAO, ENTRADA">
+      </label>
+      <label>Data inicial
+        <input type="date" name="dataInicio" th:value="${dataInicio}">
+      </label>
+      <label>Data final
+        <input type="date" name="dataFim" th:value="${dataFim}">
+      </label>
+      <div class="form-actions" style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button type="submit" class="button">Filtrar</button>
+        <a class="button" th:href="@{/admin/auditoria-alteracoes}">Limpar</a>
+        <a class="button" th:href="@{/admin/auditoria-alteracoes/exportar(usuario=${filtroUsuario},entidade=${filtroEntidade},operacao=${filtroOperacao},dataInicio=${dataInicio},dataFim=${dataFim})}">Exportar Excel</a>
+      </div>
+    </form>
+    <p class="error" th:if="${erroFiltro}" th:text="${erroFiltro}"></p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Data e hora</th><th>Usuário</th><th>Entidade</th><th>ID</th><th>Operação</th><th>Campo</th><th>Valor anterior</th><th>Valor novo</th></tr></thead>
+      <tbody>
+        <tr th:each="r : ${registros}">
+          <td th:text="${#temporals.format(r.ocorridoEm, 'dd/MM/yyyy HH:mm:ss')}"></td>
+          <td th:text="${r.usuario}"></td><td th:text="${r.entidade}"></td><td th:text="${r.entidadeId}"></td>
+          <td th:text="${r.operacao}"></td><td th:text="${r.campo}"></td>
+          <td th:text="${r.valorAnterior == null ? '—' : r.valorAnterior}"></td><td th:text="${r.valorNovo == null ? '—' : r.valorNovo}"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(registros)}"><td colspan="8" class="empty">Nenhuma alteração encontrada para os filtros informados.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="form-actions" style="margin-top:1rem;display:flex;gap:1rem;align-items:center">
+      <a class="button" th:if="${temAnterior}" th:href="@{/admin/auditoria-alteracoes(pagina=${paginaAtual - 1},usuario=${filtroUsuario},entidade=${filtroEntidade},operacao=${filtroOperacao},dataInicio=${dataInicio},dataFim=${dataFim})}">Anterior</a>
+      <span th:text="'Página ' + (${totalPaginas == 0 ? 0 : paginaAtual + 1}) + ' de ' + ${totalPaginas}"></span>
+      <a class="button" th:if="${temProxima}" th:href="@{/admin/auditoria-alteracoes(pagina=${paginaAtual + 1},usuario=${filtroUsuario},entidade=${filtroEntidade},operacao=${filtroOperacao},dataInicio=${dataInicio},dataFim=${dataFim})}">Próxima</a>
+    </div>
+  </section>
+</main><div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

@@ -1,0 +1,14 @@
+<!DOCTYPE html><html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"><body>
+<nav th:fragment="paginacao" class="pagination-controls" aria-label="Paginação">
+  <span class="pagination-summary" th:text="${paginaResumo}">Exibindo registros</span>
+  <div class="pagination-buttons">
+    <a class="button small" th:if="${paginaAtual > 0}" th:href="@{${paginaUrl}(page=${paginaAtual - 1})}">Anterior</a>
+    <span class="pagination-page" th:text="'Página ' + (${paginaAtual} + 1) + ' de ' + ${totalPaginas}">Página 1</span>
+    <a class="button small" th:if="${paginaAtual + 1 < totalPaginas}" th:href="@{${paginaUrl}(page=${paginaAtual + 1})}">Próxima</a>
+  </div>
+</nav>
+<script th:fragment="scripts">
+(function(){const sidebar=document.getElementById('appSidebar'),toggle=document.getElementById('sidebarToggle'),scrim=document.getElementById('sidebarScrim');if(toggle&&sidebar){const close=()=>{sidebar.classList.remove('is-open');if(scrim)scrim.classList.remove('is-visible');toggle.setAttribute('aria-expanded','false')};toggle.addEventListener('click',()=>{const open=!sidebar.classList.contains('is-open');sidebar.classList.toggle('is-open',open);if(scrim)scrim.classList.toggle('is-visible',open);toggle.setAttribute('aria-expanded',String(open))});if(scrim)scrim.addEventListener('click',close);document.addEventListener('keydown',e=>{if(e.key==='Escape')close()})}
+document.querySelectorAll('.table-wrap table').forEach(table=>{const tbody=table.tBodies[0];if(!tbody)return;const rows=Array.from(tbody.rows).filter(r=>!r.querySelector('.empty'));if(rows.length<=10)return;const wrap=table.closest('.table-wrap'),controls=document.createElement('div');controls.className='pagination-controls';const summary=document.createElement('span');summary.className='pagination-summary';const buttons=document.createElement('div');buttons.className='pagination-buttons';const prev=document.createElement('button'),next=document.createElement('button'),label=document.createElement('span');prev.type=next.type='button';prev.className=next.className='button small';prev.textContent='Anterior';next.textContent='Próxima';label.className='pagination-page';buttons.append(prev,label,next);controls.append(summary,buttons);wrap.insertAdjacentElement('afterend',controls);let page=0;const size=10,total=Math.ceil(rows.length/size);function draw(){rows.forEach((r,i)=>r.hidden=!(i>=page*size&&i<(page+1)*size));summary.textContent=`Exibindo ${page*size+1}–${Math.min((page+1)*size,rows.length)} de ${rows.length} registros`;label.textContent=`Página ${page+1} de ${total}`;prev.disabled=page===0;next.disabled=page===total-1}prev.addEventListener('click',()=>{if(page){page--;draw()}});next.addEventListener('click',()=>{if(page<total-1){page++;draw()}});draw()})})();
+</script>
+</body></html>

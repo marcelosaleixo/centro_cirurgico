@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Colaboradores')}"></head><body>
+<header th:replace="~{fragments/layout :: navbar}"></header><main class="container">
+<div th:replace="~{fragments/layout :: mensagens}"></div>
+<div class="page-heading"><div><p class="eyebrow">RECURSOS HUMANOS</p><h1>Colaboradores</h1><p class="muted">Cadastro e consulta da equipe do centro cirúrgico.</p></div><a class="button primary" th:href="@{/colaboradores/novo}">+ Novo colaborador</a></div>
+<form class="searchbar" method="get" th:action="@{/colaboradores}"><input type="search" name="busca" th:value="${busca}" placeholder="Buscar por nome, CPF ou e-mail"><button class="button" type="submit">Buscar</button><a class="button" th:href="@{/colaboradores}">Limpar</a></form>
+<section class="panel"><div class="table-wrap"><table><thead><tr><th>Nome</th><th>Função</th><th>Equipe</th><th>Plantão ref.</th><th>Data referência</th><th>Status</th><th>Ações</th></tr></thead><tbody>
+<tr th:each="c : ${colaboradores}"><td><strong th:text="${c.nome}"></strong><small th:text="${c.email ?: c.cpf ?: 'Sem contato informado'}"></small></td><td th:text="${c.funcao.nome}"></td><td th:text="${c.equipe != null ? c.equipe.nome : '—'}"></td><td><span class="pill" th:text="${c.plantaoReferencia}"></span></td><td th:text="${#temporals.format(c.dataReferenciaPlantao, 'dd/MM/yyyy')}"></td><td><span class="pill" th:classappend="${c.ativo ? ' active' : ' inactive'}" th:text="${c.ativo ? 'Ativo' : 'Inativo'}"></span></td><td class="actions"><a class="button small" th:href="@{/colaboradores/{id}/editar(id=${c.id})}">Editar</a><form th:if="${c.ativo}" th:action="@{/colaboradores/{id}/desativar(id=${c.id})}" method="post" onsubmit="return confirm('Desativar este colaborador?')"><button class="button small danger" type="submit">Desativar</button></form></td></tr>
+<tr th:if="${#lists.isEmpty(colaboradores)}"><td colspan="7" class="empty">Nenhum colaborador encontrado.</td></tr></tbody></table></div></section>
+</main><div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Gestão de férias')}"></head><body>
+<header th:replace="~{fragments/layout :: navbar}"></header><main class="container">
+<div th:replace="~{fragments/layout :: mensagens}"></div>
+<div class="page-heading"><div><p class="eyebrow">RECURSOS HUMANOS</p><h1>Gestão de férias</h1><p class="muted">Solicitações, períodos e decisões da chefia.</p></div><a class="button primary" th:href="@{/ferias/nova}">+ Solicitar férias</a></div>
+<section class="panel"><div class="table-wrap"><table><thead><tr><th>Colaborador</th><th>Início</th><th>Fim</th><th>Status</th><th>Aprovador</th><th>Observação</th><th>Ações</th></tr></thead><tbody>
+<tr th:each="f : ${feriasList}"><td th:text="${f.colaborador.nome}"></td><td th:text="${#temporals.format(f.dataInicio,'dd/MM/yyyy')}"></td><td th:text="${#temporals.format(f.dataFim,'dd/MM/yyyy')}"></td><td><span class="pill" th:text="${f.status}"></span></td><td th:text="${f.aprovadoPor != null ? f.aprovadoPor.nome : '—'}"></td><td th:text="${f.observacao != null ? f.observacao : '—'}"></td><td class="actions">
+<form th:if="${f.status.name() == 'SOLICITADA'}" th:action="@{/ferias/{id}/aprovar(id=${f.id})}" method="post" class="inline-action"><select name="aprovadorId" required><option value="">Aprovador...</option><option th:each="a : ${aprovadores}" th:value="${a.id}" th:text="${a.nome}"></option></select><button class="button small primary">Aprovar</button></form>
+<form th:if="${f.status.name() == 'SOLICITADA'}" th:action="@{/ferias/{id}/rejeitar(id=${f.id})}" method="post" class="inline-action"><select name="aprovadorId" required><option value="">Responsável...</option><option th:each="a : ${aprovadores}" th:value="${a.id}" th:text="${a.nome}"></option></select><button class="button small danger">Rejeitar</button></form>
+<form th:if="${f.status.name() == 'SOLICITADA' or f.status.name() == 'APROVADA'}" th:action="@{/ferias/{id}/cancelar(id=${f.id})}" method="post"><button class="button small">Cancelar</button></form></td></tr>
+<tr th:if="${#lists.isEmpty(feriasList)}"><td colspan="7" class="empty">Nenhuma solicitação cadastrada.</td></tr>
+</tbody></table></div></section></main><div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

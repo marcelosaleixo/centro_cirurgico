@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Sala cirúrgica')}"></head>
+<body><header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container narrow"><div th:replace="~{fragments/layout :: mensagens}"></div>
+<div class="page-heading"><div><p class="eyebrow">CENTRO CIRÚRGICO</p><h1 th:text="${edicao ? 'Editar sala cirúrgica' : 'Nova sala cirúrgica'}"></h1><p class="muted">As salas ativas ficam disponíveis para vinculação aos armários.</p></div><a class="button" th:href="@{/salas-cirurgicas}">Voltar</a></div>
+<section class="panel"><form th:action="@{/salas-cirurgicas/salvar}" th:object="${sala}" method="post" class="form-grid"><input type="hidden" th:field="*{id}">
+<div class="field"><label for="nome">Nome da sala <span class="required">*</span></label><input id="nome" th:field="*{nome}" maxlength="80" required placeholder="Ex.: Sala Cirúrgica 01"></div>
+<div class="field"><label for="localizacao">Localização</label><input id="localizacao" th:field="*{localizacao}" maxlength="160" placeholder="Ex.: Bloco cirúrgico, 1º andar"></div>
+<div class="field"><label><input type="checkbox" th:field="*{ativa}"> Sala ativa</label></div>
+<div class="form-actions"><button class="button primary" type="submit">Salvar sala</button><a class="button" th:href="@{/salas-cirurgicas}">Cancelar</a></div>
+</form></section></main><div th:replace="~{fragments/paginacao :: scripts}"></div></body></html>

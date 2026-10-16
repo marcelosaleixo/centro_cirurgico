@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${titulo})}"></head><body>
+<header th:replace="~{fragments/layout :: navbar}"></header><main class="container narrow">
+<div th:replace="~{fragments/layout :: mensagens}"></div>
+<div class="page-heading"><div><p class="eyebrow">SUPRIMENTOS</p><h1 th:text="${titulo}"></h1><p class="muted">Cadastre insumos e o saldo mínimo para alertas de reposição.</p></div><a class="button" th:href="@{/estoque}">Voltar</a></div>
+<form class="panel form-grid" th:action="@{/estoque/itens/salvar}" th:object="${form}" method="post">
+<input type="hidden" th:field="*{id}">
+<label>Código <span class="required">*</span><input th:field="*{codigo}" maxlength="60" required></label>
+<label>Nome do item <span class="required">*</span><input th:field="*{nome}" maxlength="160" required></label>
+<label>Unidade de medida <span class="required">*</span><input th:field="*{unidadeMedida}" maxlength="20" placeholder="un, cx, pacote, ml..." required></label>
+<label>Estoque mínimo <span class="required">*</span><input type="number" th:field="*{estoqueMinimo}" min="0" step="0.001" required></label>
+<label th:if="${form.id == null}">Quantidade inicial no estoque geral<input type="number" th:field="*{quantidadeInicial}" min="0" step="0.001" required><small class="hint">Se maior que zero, será registrada como movimentação de entrada.</small></label>
+<div class="form-actions"><button class="button primary">Salvar item</button><a class="button" th:href="@{/estoque}">Cancelar</a></div>
+</form></main><div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

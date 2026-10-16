@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Solicitar férias')}"></head><body>
+<header th:replace="~{fragments/layout :: navbar}"></header><main class="container narrow">
+<div th:replace="~{fragments/layout :: mensagens}"></div><div class="page-heading"><div><p class="eyebrow">RECURSOS HUMANOS</p><h1>Solicitar férias</h1><p class="muted">A solicitação ficará pendente até decisão da chefia.</p></div><a class="button" th:href="@{/ferias}">Voltar</a></div>
+<form class="panel form-grid" th:action="@{/ferias/solicitar}" th:object="${form}" method="post">
+<label>Colaborador <span class="required">*</span><select th:field="*{colaboradorId}" required><option value="">Selecione...</option><option th:each="c : ${colaboradores}" th:value="${c.id}" th:text="${c.nome}"></option></select></label>
+<label>Data de início <span class="required">*</span><input type="date" th:field="*{dataInicio}" required></label>
+<label>Data de fim <span class="required">*</span><input type="date" th:field="*{dataFim}" required></label>
+<label>Observação<textarea th:field="*{observacao}" rows="3" maxlength="500"></textarea></label>
+<div class="form-actions"><button class="button primary">Enviar solicitação</button><a class="button" th:href="@{/ferias}">Cancelar</a></div>
+</form></main><div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

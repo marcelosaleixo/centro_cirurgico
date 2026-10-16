@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Nova movimentação de estoque')}"></head><body>
+<header th:replace="~{fragments/layout :: navbar}"></header><main class="container narrow">
+<div th:replace="~{fragments/layout :: mensagens}"></div>
+<div class="page-heading"><div><p class="eyebrow">SUPRIMENTOS</p><h1>Nova movimentação</h1><p class="muted">Entrada, consumo/saída ou transferência entre estoque, carrinhos e armários.</p></div><a class="button" th:href="@{/estoque}">Voltar</a></div>
+<form class="panel form-grid" th:action="@{/estoque/movimentacoes/salvar}" th:object="${form}" method="post">
+<label>Item <span class="required">*</span><select th:field="*{itemId}" required><option value="">Selecione...</option><option th:each="i : ${itens}" th:value="${i.id}" th:text="${i.codigo + ' — ' + i.nome + ' (' + i.unidadeMedida + ')'}"></option></select></label>
+<label>Tipo <span class="required">*</span><select id="tipo" th:field="*{tipo}" required><option th:each="t : ${tipos}" th:value="${t}" th:text="${t}"></option></select></label>
+<label id="origemWrap">Origem<select id="origemTipo" th:field="*{origemTipo}"><option value="">Selecione...</option><option th:each="l : ${localizacoes}" th:value="${l}" th:text="${l}"></option></select></label>
+<label id="origemIdWrap">ID da origem (carrinho/armário)<input type="number" min="1" th:field="*{origemId}"><small class="hint">Informe o ID quando a origem for carrinho ou armário.</small></label>
+<label id="destinoWrap">Destino<select id="destinoTipo" th:field="*{destinoTipo}"><option value="">Selecione...</option><option th:each="l : ${localizacoes}" th:value="${l}" th:text="${l}"></option></select></label>
+<label id="destinoIdWrap">ID do destino (carrinho/armário)<input type="number" min="1" th:field="*{destinoId}"><small class="hint">Informe o ID quando o destino for carrinho ou armário.</small></label>
+<label>Quantidade <span class="required">*</span><input type="number" th:field="*{quantidade}" min="0.001" step="0.001" required></label>
+<label>Responsável<select th:field="*{colaboradorId}"><option value="">Não informado</option><option th:each="c : ${colaboradores}" th:value="${c.id}" th:text="${c.nome}"></option></select></label>
+<label>Motivo/observação<textarea th:field="*{motivo}" maxlength="500" rows="3"></textarea></label>
+<div class="form-actions"><button class="button primary">Registrar movimentação</button><a class="button" th:href="@{/estoque}">Cancelar</a></div>
+</form></main>
+<script>
+(function(){
+ const tipo=document.getElementById('tipo'), origem=document.getElementById('origemTipo'), destino=document.getElementById('destinoTipo');
+ const origemWrap=document.getElementById('origemWrap'), origemIdWrap=document.getElementById('origemIdWrap'), destinoWrap=document.getElementById('destinoWrap'), destinoIdWrap=document.getElementById('destinoIdWrap');
+ function update(){
+   const t=tipo.value;
+   origemWrap.style.display=t==='ENTRADA'?'none':'grid';
+   origemIdWrap.style.display=(t!=='ENTRADA' && origem.value!=='ESTOQUE_GERAL')?'grid':'none';
+   destinoWrap.style.display=t==='SAIDA'?'none':'grid';
+   destinoIdWrap.style.display=(t!=='SAIDA' && destino.value!=='ESTOQUE_GERAL')?'grid':'none';
+   if(t==='ENTRADA'){destino.value='ESTOQUE_GERAL';}
+   if(t==='SAIDA'){destino.value='';}
+ }
+ tipo.addEventListener('change',update); origem.addEventListener('change',update); destino.addEventListener('change',update); update();
+})();
+</script>
+<div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

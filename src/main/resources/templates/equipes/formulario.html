@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${titulo})}"></head><body><header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container narrow"><div th:replace="~{fragments/layout :: mensagens}"></div>
+<div class="page-heading"><div><p class="eyebrow">CADASTROS</p><h1 th:text="${titulo}">Equipe</h1></div><a class="button" th:href="@{/equipes}">Voltar</a></div>
+<form class="panel form-grid" th:action="@{/equipes/salvar}" th:object="${equipe}" method="post">
+<input type="hidden" th:field="*{id}"><label>Nome da equipe <span class="required">*</span><input th:field="*{nome}" required maxlength="80" placeholder="Ex.: Equipe A"></label>
+<label>Descrição<input th:field="*{descricao}" maxlength="255"></label><label class="checkbox"><input type="checkbox" th:field="*{ativo}"> Equipe ativa</label>
+<div class="form-actions"><button class="button primary" type="submit">Salvar</button><a class="button" th:href="@{/equipes}">Cancelar</a></div>
+</form></main><div th:replace="~{fragments/paginacao :: scripts}"></div>
+</body></html>

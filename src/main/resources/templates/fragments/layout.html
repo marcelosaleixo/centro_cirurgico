@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(titulo)">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${titulo} + ' | Centro Cirúrgico'">Centro Cirúrgico</title>
+  <link rel="stylesheet" th:href="@{/css/app.css(v=20261016menu3)}">
+</head>
+<body>
+<aside th:fragment="navbar" class="sidebar" id="appSidebar">
+  <div class="sidebar-brand-row">
+    <a class="brand" th:href="@{/dashboard}">Centro<br>Cirúrgico</a>
+    <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Abrir menu" aria-controls="sidebarNavigation" aria-expanded="false">☰</button>
+  </div>
+  <nav class="sidebar-navigation" id="sidebarNavigation" aria-label="Menu principal">
+    <div class="sidebar-section-label">MÓDULO · VISÃO GERAL</div>
+    <a th:href="@{/dashboard}"><span class="nav-icon">▦</span>Dashboard</a>
+
+    <div class="sidebar-section-label">MÓDULO · RECURSOS HUMANOS</div>
+    <a th:href="@{/colaboradores}"><span class="nav-icon">♙</span>Colaboradores</a>
+    <a th:href="@{/escalas}"><span class="nav-icon">▦</span>Escalas de trabalho</a>
+    <a th:href="@{/relatorios/fechamento-rh}"><span class="nav-icon">▤</span>Fechamento do RH</a>
+    <a th:href="@{/ferias}"><span class="nav-icon">☼</span>Férias</a>
+    <a th:href="@{/feriados}"><span class="nav-icon">◇</span>Feriados</a>
+    <a th:href="@{/banco-horas}"><span class="nav-icon">◷</span>Banco de horas</a>
+    <a th:href="@{/trocas}"><span class="nav-icon">⇄</span>Trocas de plantão</a>
+    <a th:href="@{/equipes}"><span class="nav-icon">♧</span>Equipes</a>
+    <a th:href="@{/funcoes}"><span class="nav-icon">▣</span>Funções profissionais</a>
+
+    <div class="sidebar-section-label">MÓDULO · SUPRIMENTOS E ESTRUTURA</div>
+    <a th:href="@{/estoque}"><span class="nav-icon">▦</span>Estoque</a>
+    <a th:href="@{/estoque/recursos}"><span class="nav-icon">▤</span>Carrinhos e armários</a>
+    <a th:href="@{/salas-cirurgicas}"><span class="nav-icon">▦</span>Salas cirúrgicas</a>
+
+    <div class="sidebar-section-label">MÓDULO · ADMINISTRAÇÃO</div>
+    <a th:href="@{/admin/usuarios}"><span class="nav-icon">♙</span>Gestão de usuários</a>
+
+    <div class="sidebar-section-label">CONTA E SEGURANÇA</div>
+    <a th:href="@{/minha-conta/senha}"><span class="nav-icon">♙</span>Minha senha</a>
+    <a th:href="@{/admin/auditoria-seguranca}"><span class="nav-icon">◉</span>Auditoria de segurança</a>
+    <a th:href="@{/admin/auditoria-operacoes}"><span class="nav-icon">▤</span>Auditoria de operações</a>
+    <a th:href="@{/admin/seguranca}"><span class="nav-icon">◇</span>Painel de segurança</a>
+    <form th:action="@{/logout}" method="post" class="logout-form"><button type="submit">Sair</button></form>
+  </nav>
+</aside>
+<button type="button" class="mobile-menu-trigger" id="mobileMenuTrigger" aria-label="Abrir menu" aria-controls="appSidebar" aria-expanded="false">☰ <span>Menu</span></button>
+<div class="sidebar-scrim" id="sidebarScrim"></div>
+<script>
+(function () {
+  function initSidebar() {
+    const sidebar = document.getElementById('appSidebar');
+    const trigger = document.getElementById('mobileMenuTrigger');
+    const oldTrigger = document.getElementById('sidebarToggle');
+    const scrim = document.getElementById('sidebarScrim');
+    if (!sidebar || !trigger || !scrim || sidebar.dataset.menuReady === 'true') return;
+    sidebar.dataset.menuReady = 'true';
+    function openMenu() {
+      sidebar.classList.add('is-open');
+      scrim.classList.add('is-visible');
+      trigger.setAttribute('aria-expanded', 'true');
+      if (oldTrigger) oldTrigger.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('sidebar-open');
+    }
+    function closeMenu() {
+      sidebar.classList.remove('is-open');
+      scrim.classList.remove('is-visible');
+      trigger.setAttribute('aria-expanded', 'false');
+      if (oldTrigger) oldTrigger.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('sidebar-open');
+    }
+    trigger.addEventListener('click', function () {
+      sidebar.classList.contains('is-open') ? closeMenu() : openMenu();
+    });
+    if (oldTrigger) oldTrigger.addEventListener('click', function () {
+      sidebar.classList.contains('is-open') ? closeMenu() : openMenu();
+    });
+    scrim.addEventListener('click', closeMenu);
+    document.addEventListener('keydown', function (event) { if (event.key === 'Escape') closeMenu(); });
+    sidebar.querySelectorAll('a').forEach(function (link) { link.addEventListener('click', closeMenu); });
+    window.addEventListener('resize', function () { if (window.innerWidth > 900) closeMenu(); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initSidebar); else initSidebar();
+})();
+</script>
+
+<div th:fragment="mensagens" class="messages">
+  <div class="alert success" th:if="${sucesso}" th:text="${sucesso}"></div>
+  <div class="alert error" th:if="${erro}" th:text="${erro}"></div>
+</div>
+</body>
+</html>

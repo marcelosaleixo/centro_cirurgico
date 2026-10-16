@@ -1,0 +1,179 @@
+:root{font-family:Inter,Segoe UI,Arial,sans-serif;color:#172033;background:#f4f7fb;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0;min-height:100vh}.topbar{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px max(24px,calc((100% - 1180px)/2));background:#10233f;color:#fff;box-shadow:0 4px 18px #0b1c3320}
+.brand{font-size:18px;font-weight:800;color:#fff;text-decoration:none;letter-spacing:.2px}.topbar nav{display:flex;gap:8px;flex-wrap:wrap}.topbar nav a{color:#d9e7ff;text-decoration:none;padding:9px 12px;border-radius:8px;font-size:14px}.topbar nav a:hover{background:#ffffff18;color:#fff}
+.container{width:min(1180px,calc(100% - 36px));margin:34px auto 64px}.container.narrow{max-width:760px}.page-heading{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:24px}.page-heading h1{font-size:clamp(25px,3vw,34px);margin:4px 0 8px;letter-spacing:-.8px}.eyebrow{font-size:11px;letter-spacing:1.5px;font-weight:800;color:#3977c5;margin:0}.muted,small,.hint{color:#69778c}.muted{margin:0;font-size:14px}
+.panel{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:22px;box-shadow:0 8px 30px #19365b08}.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid #d5deea;background:#fff;color:#26364d;padding:10px 14px;border-radius:9px;text-decoration:none;font-weight:650;font-size:13px;cursor:pointer;white-space:nowrap}.button:hover{filter:brightness(.97)}.button.primary{background:#1768c4;border-color:#1768c4;color:white}.button.danger{color:#b42318;border-color:#f0c8c4;background:#fff8f7}.button.small{padding:7px 10px;font-size:12px}
+.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13px}th{text-align:left;color:#66758b;font-size:11px;text-transform:uppercase;letter-spacing:.7px;background:#f8fafc}th,td{padding:14px 12px;border-bottom:1px solid #edf1f6;vertical-align:middle}tbody tr:last-child td{border-bottom:0}td strong,td small{display:block}td small{margin-top:4px;font-size:11px}.actions{display:flex;align-items:center;gap:6px}.actions form{margin:0}.pill{display:inline-flex;padding:5px 9px;border-radius:999px;background:#edf2f8;color:#42536b;font-size:11px;font-weight:750}.pill.active{background:#e6f7ed;color:#147443}.pill.inactive{background:#fff0ed;color:#b42318}.empty{text-align:center;color:#7b8798;padding:34px!important}
+.form-grid{display:grid;gap:18px}.two-columns{grid-template-columns:repeat(2,minmax(0,1fr))}label{display:flex;flex-direction:column;gap:7px;font-size:13px;font-weight:700;color:#34445b}input,select{width:100%;font:inherit;font-weight:450;color:#172033;background:#fff;border:1px solid #ccd6e3;border-radius:9px;padding:11px 12px;min-height:42px;outline:none}input:focus,select:focus{border-color:#3b82d0;box-shadow:0 0 0 3px #3b82d01a}.checkbox{display:flex;flex-direction:row;align-items:center;gap:9px;font-weight:600}.checkbox input{width:16px;min-height:16px}.required{color:#c2413a}.form-actions{display:flex;gap:10px;margin-top:4px}.full-width{grid-column:1/-1}.searchbar{display:flex;gap:10px;margin-bottom:18px}.searchbar input{max-width:420px}.messages{width:min(1180px,calc(100% - 36px));margin:20px auto 0}.container.narrow+.messages{width:min(760px,calc(100% - 36px))}.alert{padding:12px 15px;border-radius:10px;font-size:13px;margin-bottom:14px}.alert.success{background:#e8f8ef;color:#17643b;border:1px solid #c8ecd7}.alert.error{background:#fff0ef;color:#a52a24;border:1px solid #f3cfcc}
+@media(max-width:720px){.topbar{align-items:flex-start;flex-direction:column;padding:16px 18px;gap:12px}.topbar nav{width:100%}.topbar nav a{padding:8px 10px}.container{width:calc(100% - 24px);margin:22px auto 42px}.page-heading{align-items:flex-start;flex-direction:column}.panel{padding:14px}.two-columns{grid-template-columns:1fr}.form-actions{flex-wrap:wrap}.searchbar{flex-wrap:wrap}.searchbar input{max-width:none;flex:1 1 100%}.actions{flex-wrap:wrap}}
+
+/* Etapa 5 — filtros de escala */
+.searchbar label{display:flex;flex-direction:column;gap:7px;min-width:150px}
+.searchbar button{align-self:flex-end}
+@media(max-width:720px){.searchbar label{flex:1 1 100%;min-width:0}.searchbar button{align-self:stretch}}
+
+.inline-action{display:inline-flex;align-items:center;gap:5px;margin:0}.inline-action select{min-width:115px;max-width:150px;padding:7px 8px;min-height:32px;font-size:11px}textarea{width:100%;font:inherit;color:#172033;background:#fff;border:1px solid #ccd6e3;border-radius:9px;padding:11px 12px;resize:vertical}@media(max-width:720px){.inline-action{flex-wrap:wrap}.inline-action select{max-width:100%;width:100%}}
+
+/* Etapa 7 — estoque */
+.hint{display:block;color:#64748b;font-size:12px;margin-top:5px}.actions form{display:inline-flex}.panel h2{font-size:18px;margin:0 0 14px}
+
+/* Etapa 8 — gestão de carrinhos e armários */
+.actions form{display:inline-flex}.hint{display:block;color:#64748b;font-size:12px;margin-top:5px}.panel h2{font-size:18px;margin:0 0 14px}
+
+/* Ausências representadas na escala */
+.status-ausencia{font-weight:700;border:1px solid #d7a64b;background:#fff7e6;color:#8a5700}
+
+
+/* Etapa 11 — Calendário mensal de escalas */
+.calendar-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.calendar-toolbar h2{margin:0;text-transform:capitalize;font-size:20px}
+.calendar-legend{display:flex;flex-wrap:wrap;gap:14px;margin:0 0 16px;color:#52627a;font-size:12px}
+.calendar-legend span{display:inline-flex;align-items:center;gap:6px}
+.legend-dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.legend-dot.programmed{background:#2563eb}.legend-dot.vacation{background:#d97706}
+.legend-dot.bank{background:#7c3aed}.legend-dot.cancelled{background:#dc2626}.legend-dot.completed{background:#059669}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-top:1px solid #e2e8f0;border-left:1px solid #e2e8f0;border-radius:10px;overflow:hidden}
+.calendar-weekday{padding:10px 8px;background:#f8fafc;color:#52627a;font-size:12px;font-weight:700;text-align:center;border-right:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0}
+.calendar-day{min-height:135px;padding:7px;background:#fff;border-right:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;min-width:0}
+.calendar-day.outside-month{background:#f8fafc;color:#94a3b8}
+.calendar-day.weekend{background:#fbfcfe}
+.calendar-day-number{font-size:13px;font-weight:800;margin-bottom:6px}
+.calendar-events{display:flex;flex-direction:column;gap:5px}
+.calendar-event{display:flex;flex-direction:column;gap:2px;padding:6px;border-radius:6px;border-left:3px solid #2563eb;background:#eff6ff;color:#1e3a8a;font-size:11px;overflow-wrap:anywhere}
+.calendar-event strong{font-size:11px}.calendar-event small{font-size:10px}
+.calendar-event a{font-size:10px;font-weight:700;text-decoration:underline;margin-top:2px}
+.event-vacation{border-left-color:#d97706;background:#fffbeb;color:#92400e}
+.event-bank{border-left-color:#7c3aed;background:#f5f3ff;color:#5b21b6}
+.event-cancelled{border-left-color:#dc2626;background:#fef2f2;color:#991b1b}
+.event-completed{border-left-color:#059669;background:#ecfdf5;color:#065f46}
+.calendar-rest{font-size:10px;color:#94a3b8;padding:4px 0}
+@media(max-width:850px){
+ .calendar-day{min-height:100px;padding:4px}
+ .calendar-event{padding:4px;font-size:10px}
+ .calendar-event small,.calendar-event a{font-size:9px}
+ .calendar-weekday{padding:8px 2px}
+}
+@media(max-width:560px){
+ .calendar-toolbar{flex-wrap:wrap}
+ .calendar-toolbar h2{order:-1;width:100%;text-align:center}
+ .calendar-grid{grid-template-columns:repeat(7,minmax(74px,1fr));overflow-x:auto}
+ .calendar-day{min-height:95px}
+}
+
+.calendar-generate-panel{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:14px}
+.calendar-generate-panel h2{margin:0 0 5px;font-size:17px}
+.calendar-generate-panel .muted{margin:0;max-width:760px}
+.calendar-generate-form{flex-shrink:0}
+@media(max-width:760px){.calendar-generate-panel{align-items:stretch;flex-direction:column}.calendar-generate-form .button{width:100%;white-space:normal}}
+
+
+/* Trocas de plantão exibidas no calendário */
+.event-exchange{border-left-color:#0f766e;background:#f0fdfa;color:#115e59}
+.exchange-approved{border-left-color:#059669;background:#ecfdf5;color:#065f46}
+.exchange-pending{border-left-color:#d97706;background:#fffbeb;color:#92400e}
+.exchange-other{border-left-color:#64748b;background:#f1f5f9;color:#334155}
+.exchange-status{font-weight:800;font-size:10px}
+.calendar-exchanges{margin-top:5px}
+
+
+/* Etapa 13 — Destaque de feriados e fins de semana na listagem de escalas */
+td.data-plantao{min-width:120px;font-weight:750;border-left:3px solid transparent}
+td.data-feriado{background:#fff0ef;color:#a61b1b;border-left-color:#dc2626}
+td.data-fim-semana{background:#edf5ff;color:#1d4ed8;border-left-color:#3b82f6}
+.rotulo-data-feriado,.rotulo-data-fim-semana{display:block;margin-top:5px;font-size:10px;font-weight:700;line-height:1.35}
+.rotulo-data-feriado{color:#b42318}
+.rotulo-data-fim-semana{color:#1d4ed8}
+
+/* Etapa 14 — nomes dos dias e cadastro de feriados */
+.rotulo-dia-semana{display:block;margin-top:4px;font-size:10px;font-weight:700;text-transform:capitalize;color:#334155}
+.calendar-day-label{font-size:10px;text-transform:capitalize;color:#64748b;margin:2px 0 5px}
+.calendar-holiday-label{font-size:10px;font-weight:800;color:#b42318;background:#fff0ef;border-radius:4px;padding:3px 4px;margin:3px 0 5px}
+.calendar-day.holiday-day{background:#fff8f7}
+.calendar-day.holiday-day .calendar-day-number{color:#b42318}
+.table-subtext{display:block;color:#64748b;font-size:11px;margin-top:4px}
+.checkbox-label{display:flex;align-items:center;gap:8px}
+.checkbox-label input{width:auto}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.form-grid label{display:flex;flex-direction:column;gap:7px;font-weight:650;font-size:13px}
+.form-grid input,.form-grid select,.form-grid textarea{width:100%}
+.form-grid .full-width{grid-column:1/-1}
+.form-actions{display:flex;gap:10px}
+@media(max-width:650px){.form-grid{grid-template-columns:1fr}.form-grid .full-width{grid-column:auto}}
+
+
+/* Etapa 38 — menu lateral responsivo e paginação reutilizável */
+body{padding-left:264px}.sidebar{position:fixed;z-index:1000;inset:0 auto 0 0;width:264px;display:flex;flex-direction:column;background:#10233f;color:#fff;box-shadow:5px 0 24px #0b1c3315;overflow-y:auto;padding:20px 14px}.sidebar-brand-row{display:flex;align-items:center;justify-content:space-between;padding:4px 12px 22px;border-bottom:1px solid #ffffff1c}.sidebar .brand{font-size:20px;line-height:1.25}.sidebar-navigation{display:flex;flex-direction:column;gap:4px;padding-top:16px}.sidebar-navigation>a{display:flex;align-items:center;gap:12px;color:#d9e7ff;text-decoration:none;padding:11px 12px;border-radius:9px;font-size:13px;transition:background .15s,color .15s}.sidebar-navigation>a:hover,.sidebar-navigation>a:focus{background:#ffffff18;color:#fff}.nav-icon{width:20px;text-align:center;font-size:17px;color:#91bfff}.sidebar-section-label{padding:18px 12px 5px;color:#8fa7c8;font-size:10px;font-weight:800;letter-spacing:1.1px}.sidebar .logout-form{padding:10px 12px}.sidebar .logout-form button{width:100%;padding:10px;border:1px solid #ffffff30;border-radius:8px;color:#fff;background:#ffffff10;cursor:pointer}.sidebar-toggle{display:none;background:transparent;border:1px solid #ffffff35;color:#fff;border-radius:8px;padding:7px 10px;font-size:20px}.sidebar-scrim{display:none}.container{width:min(1180px,calc(100% - 48px));margin:34px auto 64px}.messages{width:min(1180px,calc(100% - 48px))}.pagination-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0 4px;padding:12px 2px;color:#64748b;font-size:12px}.pagination-buttons{display:flex;align-items:center;gap:8px}.pagination-page{font-size:12px;font-weight:700;color:#34445b;white-space:nowrap}.pagination-controls button:disabled{opacity:.45;cursor:not-allowed}.table-wrap tr[hidden]{display:none!important}
+@media(max-width:900px){body{padding-left:0}.sidebar{width:280px;transform:translateX(-105%);transition:transform .22s ease;box-shadow:none}.sidebar.is-open{transform:translateX(0);box-shadow:8px 0 30px #0b1c3350}.sidebar-toggle{display:block}.sidebar-scrim.is-visible{display:block;position:fixed;z-index:999;inset:0;background:#0b1c3370}.container{width:calc(100% - 28px);margin:24px auto 48px}.messages{width:calc(100% - 28px)}}
+@media(max-width:560px){.pagination-controls{align-items:flex-start;flex-direction:column}.pagination-buttons{width:100%;justify-content:space-between}.sidebar{width:min(86vw,300px)}}
+
+/* Etapa 40 — refinamento do fechamento mensal do RH */
+.closing-rh-page{max-width:1500px}
+.closing-rh-page .panel{margin-bottom:18px;padding:22px 24px}
+.closing-rh-page .section-title-row{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}
+.closing-rh-page .section-title-row h2{margin:3px 0 5px;font-size:19px;letter-spacing:-.25px}
+.closing-rh-page .section-title-row .muted{max-width:780px;line-height:1.5}
+.closing-filter-panel .filters{display:grid;grid-template-columns:minmax(180px,1fr) minmax(180px,1fr) auto auto;align-items:end;gap:12px}
+.closing-filter-panel .filters label{display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:750;color:#34445b}
+.closing-rh-page input,.closing-rh-page select,.closing-rh-page textarea{box-sizing:border-box;max-width:100%;border:1px solid #cbd7e7;border-radius:9px;padding:10px 12px;background:#fff;color:#172b46;font:inherit}
+.closing-rh-page .stack-form{display:flex;flex-direction:column;gap:10px;align-items:stretch}
+.closing-rh-page .stack-form label{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:750;color:#34445b}
+.closing-rh-page .stack-form .button{align-self:flex-start}
+.status-badge{display:inline-flex;align-items:center;border-radius:999px;padding:7px 12px;font-size:11px;font-weight:800;letter-spacing:.5px}
+.status-open{color:#17603a;background:#e6f7ed}.status-closed{color:#9b2c24;background:#fff0ed}
+.closing-table-wrap{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;border:1px solid #e7edf5;border-radius:10px}
+.closing-table{min-width:1580px;table-layout:auto}
+.closing-table th{position:sticky;top:0;z-index:2;white-space:normal;line-height:1.35;padding:13px 12px}
+.closing-table td{padding:13px 12px;min-width:72px}
+.closing-table td:first-child{min-width:145px;font-weight:700}
+.closing-table td:nth-child(2),.closing-table td:nth-child(3){min-width:110px}
+.closing-table td:last-child{min-width:260px;width:260px;background:#fbfcfe}
+.closing-table td:last-child textarea{width:100%;min-height:64px;resize:vertical}
+.closing-table td:last-child select{width:100%}
+.closing-table tbody tr:hover{background:#f8fbff}
+.closing-history-panel .table-wrap{overflow-x:auto}.closing-history-panel table{min-width:760px}
+.closing-rh-page .filters .button{min-height:40px}
+@media(max-width:900px){.closing-rh-page{width:calc(100% - 24px);margin:20px auto 40px}.closing-rh-page .panel{padding:16px}.closing-filter-panel .filters{grid-template-columns:1fr 1fr}.closing-filter-panel .filters .button{width:100%}.closing-rh-page .section-title-row{align-items:flex-start}}
+@media(max-width:520px){.closing-filter-panel .filters{grid-template-columns:1fr}.closing-rh-page .stack-form .button{width:100%}.closing-rh-page .section-title-row{flex-direction:column}}
+
+/* Navegação organizada por módulos */
+.sidebar-section-label{margin-top:8px;padding-top:15px;border-top:1px solid #ffffff12;line-height:1.4}
+.sidebar-section-label:first-child{margin-top:0;border-top:0;padding-top:8px}
+.sidebar-navigation>a{min-height:39px}
+
+/* Menu por módulos - correção aplicada em 16/10/2026 */
+.sidebar-section-label{display:block!important;margin:12px 5px 3px!important;padding:12px 8px 7px!important;border-top:1px solid rgba(255,255,255,.14);color:#9fc3f5!important;font-size:10px!important;font-weight:800!important;letter-spacing:1.15px!important;line-height:1.4;text-transform:uppercase;white-space:normal}
+.sidebar-section-label:first-child{border-top:0;margin-top:0!important;padding-top:8px!important}
+.sidebar-navigation>a{min-height:39px}
+.sidebar-navigation>a:focus-visible{outline:2px solid #91bfff;outline-offset:1px}
+@media(max-width:768px){.sidebar-section-label{padding-top:10px!important;margin-top:8px!important}}
+
+
+/* Correção definitiva de responsividade do menu lateral */
+html, body { max-width: 100%; overflow-x: clip; }
+body { padding-left: 264px; }
+.sidebar { width: 264px; height: 100dvh; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #6b7a91 #10233f; }
+.sidebar-navigation { min-width: 0; }
+.sidebar-navigation > a { min-width: 0; overflow-wrap: anywhere; }
+.mobile-menu-trigger { display: none; }
+.sidebar-scrim { display: none; }
+@media (max-width: 900px) {
+  body { padding-left: 0 !important; }
+  .sidebar { position: fixed; inset: 0 auto 0 0; width: min(84vw, 310px); max-width: calc(100vw - 48px); height: 100dvh; transform: translateX(-110%); transition: transform .22s ease; z-index: 1201; box-shadow: none; }
+  .sidebar.is-open { transform: translateX(0); box-shadow: 12px 0 34px rgba(5, 18, 38, .32); }
+  .mobile-menu-trigger { display: inline-flex; position: fixed; z-index: 1200; top: 12px; left: 12px; align-items: center; gap: 8px; padding: 10px 13px; border: 1px solid #cbd7e7; border-radius: 10px; background: #10233f; color: #fff; box-shadow: 0 4px 16px rgba(16,35,63,.18); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .sidebar-scrim.is-visible { display: block; position: fixed; inset: 0; z-index: 1200; background: rgba(7, 19, 37, .56); }
+  body.sidebar-open { overflow: hidden; }
+  .container { width: calc(100% - 28px) !important; max-width: 100%; margin: 70px auto 36px !important; }
+  .messages { width: calc(100% - 28px) !important; max-width: 100%; margin: 70px auto 0 !important; }
+  .closing-rh-page { width: calc(100% - 24px) !important; max-width: 100%; margin: 70px auto 36px !important; }
+  .panel, .card, .table-wrap { min-width: 0; max-width: 100%; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { min-width: 680px; }
+}
+@media (max-width: 480px) {
+  .mobile-menu-trigger { top: 8px; left: 8px; padding: 9px 11px; }
+  .container { width: calc(100% - 20px) !important; margin-top: 62px !important; }
+  .panel { padding: 12px !important; }
+  .page-heading h1 { font-size: 25px; }
+  .closing-rh-page { width: calc(100% - 16px) !important; margin-top: 62px !important; }
+}
