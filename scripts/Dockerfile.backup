@@ -1,0 +1,15 @@
+FROM postgres:16-bookworm
+RUN apt-get update && apt-get install -y --no-install-recommends awscli ca-certificates curl && rm -rf /var/lib/apt/lists/*
+WORKDIR /opt/backup
+COPY scripts/backup-postgres.sh /opt/backup/backup-postgres.sh
+COPY scripts/backup-with-retention.sh /opt/backup/backup-with-retention.sh
+COPY scripts/verify-backups.sh /opt/backup/verify-backups.sh
+COPY scripts/restore-drill.sh /opt/backup/restore-drill.sh
+COPY scripts/run-and-record.sh /opt/backup/run-and-record.sh
+COPY scripts/backup-status-report.sh /opt/backup/backup-status-report.sh
+COPY scripts/notify-webhook.sh /opt/backup/notify-webhook.sh
+COPY scripts/monitor-application-health.sh /opt/backup/monitor-application-health.sh
+COPY scripts/upload-backup-s3.sh /opt/backup/upload-backup-s3.sh
+RUN chmod +x /opt/backup/*.sh
+ENV BACKUP_DIR=/backups
+ENTRYPOINT ["/opt/backup/backup-with-retention.sh"]

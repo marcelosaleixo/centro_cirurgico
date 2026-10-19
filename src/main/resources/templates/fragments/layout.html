@@ -4,9 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title th:text="${titulo} + ' | Centro Cirúrgico'">Centro Cirúrgico</title>
-  <link rel="stylesheet" th:href="@{/css/app.css(v=20261016menu3)}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" th:href="@{/css/app.css(v=20261019layoutfix2)}">
 </head>
-<body>
+<body class="bg-light">
 <aside th:fragment="navbar" class="sidebar" id="appSidebar">
   <div class="sidebar-brand-row">
     <a class="brand" th:href="@{/dashboard}">Centro<br>Cirúrgico</a>
@@ -27,6 +28,11 @@
     <a th:href="@{/equipes}"><span class="nav-icon">♧</span>Equipes</a>
     <a th:href="@{/funcoes}"><span class="nav-icon">▣</span>Funções profissionais</a>
 
+    <div class="sidebar-section-label">MÓDULO · MUTIRÕES CIRÚRGICOS</div>
+    <a th:href="@{/mutiroes}"><span class="nav-icon">▦</span>Agenda de mutirões</a>
+    <a th:href="@{/mutiroes/kits}"><span class="nav-icon">▣</span>Modelos de kits cirúrgicos</a>
+    <a th:href="@{/mutiroes/solicitacoes}"><span class="nav-icon">▤</span>Solicitações do mutirão</a>
+
     <div class="sidebar-section-label">MÓDULO · SUPRIMENTOS E ESTRUTURA</div>
     <a th:href="@{/estoque}"><span class="nav-icon">▦</span>Estoque</a>
     <a th:href="@{/estoque/recursos}"><span class="nav-icon">▤</span>Carrinhos e armários</a>
@@ -34,6 +40,7 @@
 
     <div class="sidebar-section-label">MÓDULO · ADMINISTRAÇÃO</div>
     <a th:href="@{/admin/usuarios}"><span class="nav-icon">♙</span>Gestão de usuários</a>
+    <a th:href="@{/admin/backups}"><span class="nav-icon">☁</span>Monitoramento de backups</a>
 
     <div class="sidebar-section-label">CONTA E SEGURANÇA</div>
     <a th:href="@{/minha-conta/senha}"><span class="nav-icon">♙</span>Minha senha</a>

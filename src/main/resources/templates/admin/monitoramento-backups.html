@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Monitoramento de backups')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<main class="main-content">
+  <header class="page-header">
+    <div><p class="eyebrow">ADMINISTRAÇÃO · CONTINUIDADE</p><h1>Monitoramento de backups</h1><p>Acompanhe os registros dos jobs de backup, validação e cópia externa.</p></div>
+  </header>
+  <div th:replace="~{fragments/layout :: mensagens}"></div>
+  <div class="alert error" th:if="${!painel.arquivoHistoricoDisponivel}">Histórico não encontrado ou sem permissão de leitura. Confirme se o volume /backups está compartilhado com a aplicação.</div>
+  <div class="alert error" th:if="${painel.backupAtrasado}">Atenção: não há backup recente dentro do limite configurado de <span th:text="${painel.limiteHoras}">36</span> horas.</div>
+  <div class="alert success" th:if="${!painel.backupAtrasado and painel.ultimoBackup != null and painel.ultimoBackup.sucesso()}">O backup mais recente está dentro do limite de tempo configurado.</div>
+  <section class="dashboard-grid">
+    <article class="card"><h2>Último backup local</h2><p class="status-pill" th:classappend="${painel.ultimoBackup != null and painel.ultimoBackup.sucesso()} ? ' status-ok' : ' status-error'" th:text="${painel.ultimoBackup == null ? 'Sem registro' : painel.ultimoBackup.status()}">Sem registro</p><p th:text="${painel.ultimoBackup == null ? 'Nenhuma execução registrada' : painel.ultimoBackup.fimUtc() + ' UTC'}"></p></article>
+    <article class="card"><h2>Último envio S3</h2><p class="status-pill" th:classappend="${painel.ultimoEnvioS3 != null and painel.ultimoEnvioS3.sucesso()} ? ' status-ok' : ' status-error'" th:text="${painel.ultimoEnvioS3 == null ? 'Sem registro' : painel.ultimoEnvioS3.status()}">Sem registro</p><p th:text="${painel.ultimoEnvioS3 == null ? 'Nenhum envio registrado' : painel.ultimoEnvioS3.fimUtc() + ' UTC'}"></p></article>
+    <article class="card"><h2>Última validação</h2><p class="status-pill" th:classappend="${painel.ultimaValidacao != null and painel.ultimaValidacao.sucesso()} ? ' status-ok' : ' status-error'" th:text="${painel.ultimaValidacao == null ? 'Sem registro' : painel.ultimaValidacao.status()}">Sem registro</p><p th:text="${painel.ultimaValidacao == null ? 'Nenhuma validação registrada' : painel.ultimaValidacao.fimUtc() + ' UTC'}"></p></article>
+    <article class="card"><h2>Falhas no histórico</h2><p class="metric-value" th:text="${painel.falhasHistorico}">0</p><p>Últimos 100 registros considerados</p></article>
+  </section>
+  <section class="card table-card">
+    <div class="section-heading"><div><h2>Histórico de operações</h2><p>Até 30 execuções mais recentes. Os horários estão em UTC.</p></div><a class="button secondary" th:href="@{/admin/auditoria-operacoes}">Auditoria do sistema</a></div>
+    <div class="table-responsive"><table><thead><tr><th>Início (UTC)</th><th>Ação</th><th>Status</th><th>Duração</th><th>Banco</th><th>Detalhe</th></tr></thead>
+      <tbody><tr th:each="op : ${painel.historico}"><td th:text="${op.inicioUtc()}"></td><td th:text="${op.acao()}"></td><td><span class="status-pill" th:classappend="${op.sucesso()} ? ' status-ok' : ' status-error'" th:text="${op.status()}"></span></td><td th:text="${op.duracaoSegundos() + ' s'}"></td><td th:text="${op.banco()}"></td><td th:text="${op.mensagem()}"></td></tr>
+      <tr th:if="${#lists.isEmpty(painel.historico)}"><td colspan="6">Nenhuma operação registrada até o momento.</td></tr></tbody></table></div>
+  </section>
+  <p class="help-text">Este painel é somente de consulta. Ele não executa backups, não comprova a restauração do banco e não substitui os alertas do agendador.</p>
+</main>
+</body></html>

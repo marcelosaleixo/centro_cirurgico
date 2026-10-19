@@ -26,10 +26,10 @@ public class SegurancaConfig {
                                                    AuditoriaLoginFailureHandler failureHandler) throws Exception {
         http.authorizeHttpRequests(auth -> auth
                 // Recursos públicos necessários para autenticação e páginas de erro.
-                .requestMatchers("/login", "/error", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                .requestMatchers("/login", "/error", "/css/**", "/js/**", "/images/**", "/webjars/**", "/actuator/health", "/actuator/health/**").permitAll()
 
                 // Administração e auditoria: somente ADMIN_RH.
-                .requestMatchers("/admin/usuarios/**", "/admin/auditoria-seguranca/**", "/admin/auditoria-operacoes/**", "/admin/auditoria-alteracoes/**", "/admin/seguranca/**").hasRole("ADMIN_RH")
+                .requestMatchers("/admin/usuarios/**", "/admin/auditoria-seguranca/**", "/admin/auditoria-operacoes/**", "/admin/auditoria-alteracoes/**", "/admin/seguranca/**", "/admin/backups/**").hasRole("ADMIN_RH")
                 .requestMatchers(HttpMethod.POST,
                         "/relatorios/fechamento-rh/fechar",
                         "/relatorios/fechamento-rh/reabrir").hasRole("ADMIN_RH")
