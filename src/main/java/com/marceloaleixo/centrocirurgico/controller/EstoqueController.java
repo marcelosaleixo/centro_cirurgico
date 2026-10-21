@@ -38,6 +38,29 @@ public class EstoqueController {
         return "estoque/painel";
     }
 
+    @GetMapping("/baixa-fefo")
+    public String formularioBaixaFefo(Model model) {
+        model.addAttribute("itens", service.listarItens().stream().filter(ItemEstoque::isAtivo).toList());
+        model.addAttribute("colaboradores", colaboradorRepository.findByAtivoTrueOrderByNomeAsc());
+        return "estoque/baixa-fefo";
+    }
+
+    @PostMapping("/baixa-fefo")
+    public String salvarBaixaFefo(@RequestParam Long itemId, @RequestParam java.math.BigDecimal quantidade,
+                                  @RequestParam(required=false) Long colaboradorId, @RequestParam String motivo,
+                                  Model model, RedirectAttributes ra) {
+        try {
+            service.registrarBaixaFefo(itemId, quantidade, colaboradorId, motivo);
+            ra.addFlashAttribute("sucesso", "Baixa registrada por FEFO; lotes válidos e saldo geral atualizados.");
+            return "redirect:/estoque";
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            model.addAttribute("erro", ex.getMessage());
+            model.addAttribute("itens", service.listarItens().stream().filter(ItemEstoque::isAtivo).toList());
+            model.addAttribute("colaboradores", colaboradorRepository.findByAtivoTrueOrderByNomeAsc());
+            return "estoque/baixa-fefo";
+        }
+    }
+
     @GetMapping("/itens/novo")
     public String novoItem(Model model) {
         model.addAttribute("form", new ItemEstoqueForm());

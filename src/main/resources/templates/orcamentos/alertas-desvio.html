@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Alertas de desvio orçamentário')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container">
+  <div class="page-heading">
+    <div><p class="eyebrow">GESTÃO FINANCEIRA · CENTRO CIRÚRGICO</p><h1>Alertas de desvio orçamentário</h1>
+      <p class="muted">Identifique materiais cujo custo estimado ultrapassa o orçamento previsto.</p></div>
+    <a class="button secondary" th:href="@{/orcamentos/cirurgicos/comparativo}">Ver previsto x realizado</a>
+  </div>
+  <div class="alert warning">O cálculo considera até os <strong th:text="${limiteHistorico}">300</strong> registros de consumo mais recentes e agrupa por procedimento e material. Não representa necessariamente uma cirurgia individual.</div>
+  <section class="panel">
+    <form method="get" th:action="@{/orcamentos/alertas}" class="form-grid">
+      <label>Limite de tolerância (%)<input type="number" name="tolerancia" min="0" max="500" step="0.5" required th:value="${tolerancia}"></label>
+      <div class="form-actions"><button class="button" type="submit">Aplicar limite</button></div>
+    </form>
+  </section>
+  <section class="stats-grid">
+    <article class="stat-card"><span>Materiais orçados</span><strong th:text="${quantidadeLinhas}">0</strong></article>
+    <article class="stat-card"><span>Alertas acima do limite</span><strong th:text="${quantidadeAlertas}">0</strong></article>
+  </section>
+  <section class="panel"><div class="table-wrap"><table>
+    <thead><tr><th>Procedimento</th><th>Material</th><th>Previsto</th><th>Realizado estimado</th><th>Desvio</th><th>Desvio (%)</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr th:each="l : ${linhas}">
+        <td th:text="${l.procedimento}"></td><td th:text="${l.material}"></td>
+        <td th:text="|R$ ${#numbers.formatDecimal(l.previsto,1,'POINT',2,'COMMA')}|"></td>
+        <td th:text="|R$ ${#numbers.formatDecimal(l.realizado,1,'POINT',2,'COMMA')}|"></td>
+        <td th:text="|R$ ${#numbers.formatDecimal(l.desvio,1,'POINT',2,'COMMA')}|"></td>
+        <td th:text="|${#numbers.formatDecimal(l.percentual,1,'POINT',2,'COMMA')}%|"></td>
+        <td><span th:if="${l.alerta}" class="badge danger">Acima do limite</span><span th:unless="${l.alerta}" class="badge success">Dentro do limite</span></td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(linhas)}"><td colspan="7" class="empty">Cadastre orçamentos de materiais para acompanhar os desvios.</td></tr>
+    </tbody>
+  </table></div></section>
+  <p class="muted">O alerta compara o custo previsto do material com o custo estimado acumulado no histórico consultado. Confirme se os custos dos lotes estão preenchidos antes de usar os indicadores para decisões financeiras.</p>
+</main>
+</body></html>

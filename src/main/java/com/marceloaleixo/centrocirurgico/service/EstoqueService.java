@@ -8,6 +8,7 @@ import com.marceloaleixo.centrocirurgico.web.ItemEstoqueForm;
 import com.marceloaleixo.centrocirurgico.web.MovimentacaoEstoqueForm;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -25,13 +26,15 @@ public class EstoqueService {
     private final ArmarioItemRepository armarioItemRepository;
     private final ColaboradorRepository colaboradorRepository;
     private final AuditoriaAlteracaoService auditoriaAlteracaoService;
+    private final LoteEstoqueRepository loteEstoqueRepository;
 
     public EstoqueService(ItemEstoqueRepository itemRepository, EstoqueGeralRepository estoqueRepository,
                           MovimentacaoEstoqueRepository movimentacaoRepository,
                           CarrinhoAnestesistaRepository carrinhoRepository, ArmarioSalaRepository armarioRepository,
                           CarrinhoItemRepository carrinhoItemRepository, ArmarioItemRepository armarioItemRepository,
                           ColaboradorRepository colaboradorRepository,
-                          AuditoriaAlteracaoService auditoriaAlteracaoService) {
+                          AuditoriaAlteracaoService auditoriaAlteracaoService,
+                          LoteEstoqueRepository loteEstoqueRepository) {
         this.itemRepository = itemRepository;
         this.estoqueRepository = estoqueRepository;
         this.movimentacaoRepository = movimentacaoRepository;
@@ -41,6 +44,7 @@ public class EstoqueService {
         this.armarioItemRepository = armarioItemRepository;
         this.colaboradorRepository = colaboradorRepository;
         this.auditoriaAlteracaoService = auditoriaAlteracaoService;
+        this.loteEstoqueRepository = loteEstoqueRepository;
     }
 
     @Transactional(readOnly = true)
@@ -123,6 +127,39 @@ public class EstoqueService {
     @Transactional(readOnly = true)
     public List<MovimentacaoEstoque> listarMovimentacoes() {
         return movimentacaoRepository.findTop100ByOrderByDataMovimentacaoDesc();
+    }
+
+    /** Retira do estoque geral seguindo FEFO (vence primeiro, sai primeiro). */
+    @Transactional
+    public void registrarBaixaFefo(Long itemId, BigDecimal quantidade, Long colaboradorId, String motivo) {
+        if (itemId == null) throw new IllegalArgumentException("Selecione o item.");
+        if (quantidade == null || quantidade.signum() <= 0) throw new IllegalArgumentException("A quantidade deve ser maior que zero.");
+        if (motivo == null || motivo.isBlank()) throw new IllegalArgumentException("Informe o motivo da baixa.");
+        ItemEstoque item = itemRepository.findById(itemId).orElseThrow(() -> new IllegalArgumentException("Item não encontrado."));
+        if (!item.isAtivo()) throw new IllegalArgumentException("Não é possível baixar item inativo.");
+        EstoqueGeral saldo = estoqueRepository.bloquearPorItemId(itemId).orElseThrow(() -> new IllegalStateException("Saldo do estoque geral não encontrado."));
+        if (saldo.getQuantidadeAtual().compareTo(quantidade) < 0) throw new IllegalStateException("Saldo geral insuficiente.");
+        List<LoteEstoque> lotes = loteEstoqueRepository.bloquearLotesValidosFefo(itemId, LocalDate.now());
+        BigDecimal disponivelLotes = lotes.stream().map(LoteEstoque::getQuantidadeAtual).reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (disponivelLotes.compareTo(quantidade) < 0) throw new IllegalStateException("Saldo por lote válido insuficiente. Verifique lotes vencidos, sem lote ou divergência entre saldo geral e lotes.");
+        BigDecimal restante = quantidade;
+        StringBuilder detalhamento = new StringBuilder(motivo.trim()).append(" | FEFO: ");
+        for (LoteEstoque lote : lotes) {
+            if (restante.signum() <= 0) break;
+            BigDecimal baixa = lote.getQuantidadeAtual().min(restante);
+            lote.setQuantidadeAtual(lote.getQuantidadeAtual().subtract(baixa));
+            loteEstoqueRepository.save(lote);
+            if (detalhamento.charAt(detalhamento.length()-1) != ' ') detalhamento.append(", ");
+            detalhamento.append(lote.getNumeroLote()).append(" (-").append(baixa.toPlainString()).append(")");
+            restante = restante.subtract(baixa);
+        }
+        saldo.setQuantidadeAtual(saldo.getQuantidadeAtual().subtract(quantidade));
+        estoqueRepository.save(saldo);
+        MovimentacaoEstoque mov = new MovimentacaoEstoque();
+        mov.setItem(item); mov.setTipo(TipoMovimentacao.SAIDA); mov.setQuantidade(quantidade);
+        mov.setOrigemTipo(LocalizacaoEstoque.ESTOQUE_GERAL); mov.setMotivo(detalhamento.toString());
+        if (colaboradorId != null) mov.setColaborador(colaboradorRepository.findById(colaboradorId).orElseThrow(() -> new IllegalArgumentException("Colaborador responsável não encontrado.")));
+        movimentacaoRepository.save(mov);
     }
 
     @Transactional

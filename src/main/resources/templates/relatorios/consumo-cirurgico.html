@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Relatório de consumo cirúrgico')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container">
+  <div class="page-heading"><div><p class="eyebrow">RELATÓRIOS · CENTRO CIRÚRGICO</p><h1>Consumo cirúrgico</h1><p class="muted">Consulte materiais utilizados, lotes, validades e quantidades por procedimento.</p></div><div class="actions"><a class="button secondary" th:href="@{/estoque/rastreabilidade-cirurgias}">Registrar consumo</a></div></div>
+  <section class="panel"><h2>Filtros</h2><form method="get" th:action="@{/relatorios/consumo-cirurgico}" class="form-grid">
+    <label>Cirurgia<select name="cirurgiaId"><option value="">Todas as cirurgias</option><option th:each="c : ${cirurgias}" th:value="${c.id}" th:selected="${cirurgiaId != null and cirurgiaId == c.id}" th:text="|#${c.id} · ${c.dataCirurgia} · ${c.paciente.nome} · ${c.procedimento.nome}|"></option></select></label>
+    <label>Data inicial<input type="date" name="inicio" th:value="${inicio}" /></label><label>Data final<input type="date" name="fim" th:value="${fim}" /></label>
+    <div class="actions"><button class="button" type="submit">Aplicar filtros</button><a class="button secondary" th:href="@{/relatorios/consumo-cirurgico}">Limpar</a><a class="button secondary" th:href="@{/relatorios/consumo-cirurgico/exportar.csv(cirurgiaId=${cirurgiaId},inicio=${inicio},fim=${fim})}">Exportar CSV</a></div>
+  </form></section>
+  <div class="stats-grid"><section class="panel"><p class="muted">Registros de consumo</p><h2 th:text="${totalRegistros}">0</h2></section><section class="panel"><p class="muted">Quantidade total registrada (soma das unidades)</p><h2 th:text="${totalQuantidade}">0</h2></section></div>
+  <section class="panel" th:if="${custoDisponivel}"><p class="muted">Custo total estimado dos materiais consumidos</p><h2 th:text="|R$ ${#numbers.formatDecimal(custoTotal,1,'POINT',2,'COMMA')}|">R$ 0,00</h2><p class="muted">Cálculo baseado no custo unitário registrado em cada lote.</p></section>
+  <div class="alert warning" th:unless="${custoDisponivel}">Há registros sem custo unitário disponível ou nenhum consumo no período. O total financeiro não será apresentado até que os custos dos lotes sejam conferidos.</div>
+  <section class="panel"><div class="table-wrap"><table><thead><tr><th>Registro</th><th>Cirurgia</th><th>Data</th><th>Paciente</th><th>Procedimento</th><th>Material</th><th>Lote</th><th>Validade</th><th>Quantidade</th><th>Unidade</th><th>Custo unitário</th><th>Custo total</th><th>Observação</th></tr></thead><tbody>
+    <tr th:each="c : ${registros}"><td th:text="${c.registradoEm != null ? #temporals.format(c.registradoEm,'dd/MM/yyyy HH:mm') : '-'}"></td><td th:text="|#${c.cirurgia.id}|"></td><td th:text="${#temporals.format(c.cirurgia.dataCirurgia,'dd/MM/yyyy')}"></td><td th:text="${c.cirurgia.paciente.nome}"></td><td th:text="${c.cirurgia.procedimento.nome}"></td><td th:text="${c.item.nome}"></td><td th:text="${c.lote.numeroLote}"></td><td th:text="${#temporals.format(c.lote.dataValidade,'dd/MM/yyyy')}"></td><td th:text="${c.quantidade}"></td><td th:text="${c.item.unidadeMedida}"></td><td th:text="${c.lote.custoUnitario != null ? #numbers.formatDecimal(c.lote.custoUnitario,1,'POINT',4,'COMMA') : '—'}"></td><td th:text="${c.lote.custoUnitario != null ? #numbers.formatDecimal(c.quantidade.multiply(c.lote.custoUnitario),1,'POINT',2,'COMMA') : '—'}"></td><td th:text="${c.observacao}"></td></tr>
+    <tr th:if="${#lists.isEmpty(registros)}"><td colspan="13" class="empty">Nenhum consumo encontrado para os filtros selecionados.</td></tr>
+  </tbody></table></div></section>
+</main></body></html>

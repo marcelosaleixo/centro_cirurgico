@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Rastreabilidade por cirurgia')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container">
+  <div class="page-heading">
+    <div><p class="eyebrow">ESTOQUE · CENTRO CIRÚRGICO</p><h1>Rastreabilidade por cirurgia</h1><p class="muted">Registre materiais consumidos e consulte os lotes utilizados em cada procedimento.</p></div>
+    <div class="actions"><a class="button secondary" th:href="@{/estoque/lotes}">Consultar lotes e validade</a><a class="button secondary" th:href="@{/relatorios/consumo-cirurgico}">Relatório de consumo</a></div>
+  </div>
+  <div th:if="${sucesso}" class="alert success" th:text="${sucesso}"></div>
+  <div th:if="${erro}" class="alert danger" th:text="${erro}"></div>
+  <section class="panel">
+    <h2>Registrar consumo</h2>
+    <p class="muted">A baixa usa FEFO: prioriza os lotes válidos com vencimento mais próximo. O consumo, os saldos e a movimentação são gravados na mesma transação.</p>
+    <form method="post" th:action="@{/estoque/rastreabilidade-cirurgias}" class="form-grid">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+      <label>Cirurgia
+        <select name="cirurgiaId" required>
+          <option value="">Selecione a cirurgia</option>
+          <option th:each="c : ${cirurgias}" th:value="${c.id}" th:selected="${cirurgiaSelecionada != null and cirurgiaSelecionada == c.id}"
+            th:text="|#${c.id} · ${c.dataCirurgia} · ${c.paciente.nome} · ${c.procedimento.nome}|"></option>
+        </select>
+      </label>
+      <label>Material / insumo
+        <select name="itemId" required><option value="">Selecione o material</option>
+          <option th:each="i : ${itens}" th:value="${i.id}" th:text="|${i.codigo} · ${i.nome} (${i.unidadeMedida})|"></option>
+        </select>
+      </label>
+      <label>Quantidade consumida<input type="number" name="quantidade" min="0.001" step="0.001" required /></label>
+      <label class="full-width">Finalidade / observação<input type="text" name="observacao" maxlength="500" required placeholder="Ex.: material utilizado durante o procedimento" /></label>
+      <div class="actions full-width"><button type="submit" class="button">Registrar consumo</button></div>
+    </form>
+  </section>
+  <section class="panel">
+    <div class="page-heading"><div><h2>Histórico de consumo</h2><p class="muted">Selecione uma cirurgia no formulário para filtrar os registros.</p></div>
+      <a class="button secondary" th:href="@{/estoque/rastreabilidade-cirurgias}">Ver todos</a></div>
+    <div class="table-wrap"><table><thead><tr><th>Registrado em</th><th>Cirurgia</th><th>Paciente</th><th>Procedimento</th><th>Material</th><th>Lote</th><th>Validade</th><th>Quantidade</th><th>Observação</th></tr></thead>
+      <tbody><tr th:each="c : ${consumos}">
+        <td th:text="${c.registradoEm != null ? #temporals.format(c.registradoEm,'dd/MM/yyyy HH:mm') : '-'}"></td>
+        <td th:text="|#${c.cirurgia.id}|"></td><td th:text="${c.cirurgia.paciente.nome}"></td><td th:text="${c.cirurgia.procedimento.nome}"></td>
+        <td th:text="${c.item.nome}"></td><td th:text="${c.lote.numeroLote}"></td>
+        <td th:text="${#temporals.format(c.lote.dataValidade,'dd/MM/yyyy')}"></td><td th:text="${c.quantidade}"></td><td th:text="${c.observacao}"></td>
+      </tr><tr th:if="${#lists.isEmpty(consumos)}"><td colspan="9" class="empty">Nenhum consumo registrado para os filtros selecionados.</td></tr></tbody>
+    </table></div>
+  </section>
+</main>
+</body></html>

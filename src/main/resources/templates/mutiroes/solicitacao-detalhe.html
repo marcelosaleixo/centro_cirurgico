@@ -30,6 +30,29 @@
   </div>
  </section>
  <section class="card mutirao-card shadow-sm mb-4"><div class="card-body p-4"><h2 class="h5 mb-3">Responsáveis e histórico</h2><div class="row g-3"><div class="col-12 col-md-6"><div class="border rounded p-3 h-100"><div class="text-secondary small">Aprovação</div><strong th:text="${s.aprovador==null?'Ainda não aprovada':s.aprovador}"></strong><div class="small text-secondary" th:if="${s.dataAprovacao!=null}" th:text="${#temporals.format(s.dataAprovacao,'dd/MM/yyyy HH:mm')}"></div></div></div><div class="col-12 col-md-6"><div class="border rounded p-3 h-100"><div class="text-secondary small">Separação</div><strong th:text="${s.responsavelSeparacao==null?'Não registrada':s.responsavelSeparacao}"></strong><div class="small text-secondary" th:if="${s.dataSeparacao!=null}" th:text="${#temporals.format(s.dataSeparacao,'dd/MM/yyyy HH:mm')}"></div></div></div><div class="col-12 col-md-6" th:if="${s.dataEntrega!=null}"><div class="border rounded p-3 h-100"><div class="text-secondary small">Entrega registrada por</div><strong th:text="${s.responsavelEntrega}"></strong><div class="small text-secondary" th:text="${#temporals.format(s.dataEntrega,'dd/MM/yyyy HH:mm')}"></div></div></div></div><p class="mt-3 mb-0" th:if="${s.observacoes!=null and !s.observacoes.isBlank()}" th:text="${s.observacoes}"></p></div></section>
+ <section class="card mutirao-card shadow-sm mb-4">
+  <div class="card-body p-4">
+   <h2 class="h5 mb-3">Histórico de movimentações</h2>
+   <div th:if="${#lists.isEmpty(historico)}" class="text-secondary">Nenhuma movimentação registrada ainda.</div>
+   <div class="table-responsive" th:unless="${#lists.isEmpty(historico)}">
+    <table class="table table-sm align-middle"><thead><tr><th>Data e hora</th><th>Ação</th><th>Descrição</th><th>Responsável</th><th>Status</th></tr></thead>
+     <tbody><tr th:each="h : ${historico}"><td class="text-nowrap" th:text="${#temporals.format(h.ocorridoEm,'dd/MM/yyyy HH:mm:ss')}"></td><td th:text="${h.acao}"></td><td th:text="${h.descricao}"></td><td th:text="${h.responsavel == null ? '—' : h.responsavel}"></td><td><span th:text="${h.statusAnterior == null ? (h.statusNovo == null ? '—' : h.statusNovo) : h.statusAnterior + ' → ' + h.statusNovo}"></span></td></tr></tbody>
+    </table>
+   </div>
+  </div>
+ </section>
+ <section class="card mutirao-card shadow-sm mb-4">
+  <div class="card-body p-4">
+   <h2 class="h5 mb-3">Auditoria detalhada dos itens</h2>
+   <p class="text-secondary small">Registra as alterações de quantidade separada, com valor anterior, novo valor, responsável e horário.</p>
+   <div th:if="${#lists.isEmpty(auditoriaItens)}" class="text-secondary">Nenhuma alteração de quantidade registrada.</div>
+   <div class="table-responsive" th:unless="${#lists.isEmpty(auditoriaItens)}">
+    <table class="table table-sm align-middle"><thead><tr><th>Data e hora</th><th>Item</th><th>Campo</th><th>Valor anterior</th><th>Valor novo</th><th>Responsável</th></tr></thead>
+     <tbody><tr th:each="a : ${auditoriaItens}"><td class="text-nowrap" th:text="${#temporals.format(a.ocorridoEm,'dd/MM/yyyy HH:mm:ss')}"></td><td th:text="${a.itemDescricao}"></td><td th:text="${a.campoAlterado}"></td><td th:text="${a.valorAnterior == null ? '—' : a.valorAnterior}"></td><td th:text="${a.valorNovo == null ? '—' : a.valorNovo}"></td><td th:text="${a.responsavel == null ? '—' : a.responsavel}"></td></tr></tbody>
+    </table>
+   </div>
+  </div>
+ </section>
  <section class="card mutirao-card shadow-sm" th:if="${s.status!='ENTREGUE'}"><div class="card-body p-4"><h2 class="h5 mb-3">Ações da solicitação</h2><form method="post" th:action="@{/mutiroes/solicitacoes/{id}/status(id=${s.id})}" class="d-flex flex-wrap gap-3 align-items-end"><div th:if="${s.status=='ENVIADA'}" class="flex-grow-1" style="max-width:420px"><label class="form-label">Responsável pela aprovação *</label><input class="form-control" name="responsavel" maxlength="160" required></div><div th:if="${s.status=='EM_SEPARACAO'}" class="flex-grow-1" style="max-width:420px"><label class="form-label">Responsável pelo registro da entrega *</label><input class="form-control" name="responsavel" maxlength="160" required></div><button class="btn btn-outline-primary" name="status" value="ENVIADA" th:if="${s.status=='RASCUNHO'}">Enviar para aprovação</button><button class="btn btn-primary" name="status" value="APROVADA" th:if="${s.status=='ENVIADA'}">Aprovar solicitação</button><button class="btn btn-primary" name="status" value="EM_SEPARACAO" th:if="${s.status=='APROVADA'}">Iniciar separação</button><button class="btn btn-success" name="status" value="ENTREGUE" th:if="${s.status=='EM_SEPARACAO'}">Confirmar entrega completa</button></form><p class="small text-secondary mt-3 mb-0" th:if="${s.status=='EM_SEPARACAO'}">A entrega só pode ser confirmada quando todos os itens tiverem quantidade separada igual à solicitada.</p></div></section>
 <div class="print-signatures"><div>Responsável pela separação</div><div>Responsável pelo recebimento</div></div>
 </main></body></html>

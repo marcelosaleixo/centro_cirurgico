@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Baixa por lote FEFO')}"></head><body>
+<header th:replace="~{fragments/layout :: navbar}"></header><main class="container narrow">
+<div th:replace="~{fragments/layout :: mensagens}"></div>
+<div class="page-heading"><div><p class="eyebrow">SUPRIMENTOS / RASTREABILIDADE</p><h1>Baixa por lote (FEFO)</h1><p class="muted">O sistema prioriza os lotes válidos com vencimento mais próximo.</p></div><a class="button" th:href="@{/estoque}">Voltar</a></div>
+<div class="panel"><p><strong>Atenção:</strong> a baixa só é permitida quando houver saldo suficiente em lotes não vencidos. O saldo geral e os lotes serão atualizados na mesma transação.</p></div>
+<form class="panel form-grid" th:action="@{/estoque/baixa-fefo}" method="post">
+<label>Item <span class="required">*</span><select name="itemId" required><option value="">Selecione...</option><option th:each="i : ${itens}" th:value="${i.id}" th:text="${i.codigo + ' — ' + i.nome + ' (' + i.unidadeMedida + ')'}"></option></select></label>
+<label>Quantidade <span class="required">*</span><input type="number" name="quantidade" min="0.001" step="0.001" required></label>
+<label>Responsável<select name="colaboradorId"><option value="">Não informado</option><option th:each="c : ${colaboradores}" th:value="${c.id}" th:text="${c.nome}"></option></select></label>
+<label>Motivo da baixa <span class="required">*</span><textarea name="motivo" maxlength="400" rows="3" required placeholder="Ex.: consumo em procedimento, descarte autorizado..."></textarea></label>
+<div class="form-actions"><button class="button primary" type="submit">Registrar baixa FEFO</button><a class="button" th:href="@{/estoque}">Cancelar</a></div>
+</form></main><div th:replace="~{fragments/paginacao :: scripts}"></div></body></html>

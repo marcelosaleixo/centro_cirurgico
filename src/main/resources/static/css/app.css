@@ -218,3 +218,69 @@ body { padding-left: 264px; }
 .page-content .messages{width:100%;margin:0 0 16px}.page-content .messages .alert{margin-bottom:10px}.page-content .card h2{margin:0 0 16px;font-size:19px;color:#173253}.page-content .card .table-responsive{margin:-2px}
 @media(max-width:900px){.page-content{width:calc(100% - 32px);margin:22px auto 40px}.page-header{align-items:flex-start;flex-direction:column;padding:21px}.page-content .card{padding:17px}}
 @media(max-width:620px){.page-content{width:calc(100% - 20px);margin:14px auto 30px}.page-header{padding:17px;gap:14px}.page-header h1{font-size:25px}.page-header>.btn{width:100%}.page-content .form-grid{grid-template-columns:minmax(0,1fr);gap:15px}.page-content .full-width{grid-column:auto}.page-content .form-actions{display:grid;grid-template-columns:1fr}.page-content .form-actions .btn{width:100%}.page-content .card{padding:13px}.page-content table th,.page-content table td{padding:11px 12px}.page-content .actions .btn{flex:1}}
+
+/* Correção final de responsividade do menu lateral — Etapa 91 */
+:root { --sidebar-width: 264px; --sidebar-mobile-width: min(86vw, 320px); }
+body { padding-left: var(--sidebar-width); }
+#appSidebar { width: var(--sidebar-width); max-width: 100vw; height: 100vh; height: 100dvh; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; }
+#sidebarNavigation { width: 100%; min-width: 0; }
+#sidebarNavigation > a { white-space: normal; overflow-wrap: anywhere; line-height: 1.35; }
+#sidebarNavigation .sidebar-section-label { overflow-wrap: anywhere; }
+.mobile-menu-trigger { display: none; }
+.sidebar-scrim { display: none; }
+@media (max-width: 1024px) {
+  body { padding-left: 0 !important; }
+  #appSidebar { width: var(--sidebar-mobile-width); max-width: calc(100vw - 24px); transform: translateX(-105%); visibility: hidden; transition: transform .22s ease, visibility .22s ease; z-index: 1301; }
+  #appSidebar.is-open { transform: translateX(0); visibility: visible; }
+  #appSidebar .sidebar-toggle { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+  .mobile-menu-trigger { display: inline-flex; position: fixed; z-index: 1300; top: max(10px, env(safe-area-inset-top)); left: max(10px, env(safe-area-inset-left)); align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 9px 13px; border: 1px solid #cbd7e7; border-radius: 10px; background: #10233f; color: #fff; box-shadow: 0 4px 16px rgba(16,35,63,.2); font: inherit; font-size: 13px; font-weight: 750; cursor: pointer; }
+  .mobile-menu-trigger:focus-visible, #sidebarToggle:focus-visible { outline: 3px solid #7db6ff; outline-offset: 3px; }
+  .sidebar-scrim.is-visible { display: block; position: fixed; z-index: 1300; inset: 0; background: rgba(7,19,37,.58); }
+  body.sidebar-open { overflow: hidden !important; }
+  body.sidebar-open #appSidebar { box-shadow: 12px 0 34px rgba(5,18,38,.32); }
+  .container, .messages, .page-content, .page-content.mutirao-page, .closing-rh-page { width: calc(100% - 32px) !important; max-width: none !important; margin-left: auto !important; margin-right: auto !important; }
+  .container, .page-content, .page-content.mutirao-page, .closing-rh-page { margin-top: 68px !important; }
+  .messages { margin-top: 68px !important; }
+  .panel, .card, .table-wrap, .table-responsive { min-width: 0; max-width: 100%; }
+  .table-wrap, .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+}
+@media (max-width: 600px) {
+  #appSidebar { padding: 14px 10px; }
+  #appSidebar .sidebar-brand-row { padding: 4px 8px 16px; }
+  #appSidebar .sidebar .brand, #appSidebar .brand { font-size: 18px; }
+  #sidebarNavigation { padding-top: 10px; gap: 3px; }
+  #sidebarNavigation > a { min-height: 42px; padding: 10px 9px; font-size: 13px; }
+  #sidebarNavigation .sidebar-section-label { font-size: 9px !important; letter-spacing: .8px !important; padding: 10px 7px 6px !important; }
+  .container, .messages, .page-content, .page-content.mutirao-page, .closing-rh-page { width: calc(100% - 20px) !important; }
+  .container, .page-content, .page-content.mutirao-page, .closing-rh-page { margin-top: 62px !important; }
+  .messages { margin-top: 62px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #appSidebar { transition: none !important; }
+}
+
+
+/* Etapa 92: navegação lateral organizada em módulos recolhíveis */
+#sidebarNavigation .sidebar-module-toggle {
+  width: 100%; display: flex !important; align-items: center; justify-content: space-between;
+  gap: 10px; text-align: left; border: 0; background: transparent; cursor: pointer;
+  font: inherit; color: #9fc3f5 !important; border-radius: 8px; margin: 7px 0 2px !important;
+  padding: 12px 10px 9px !important; line-height: 1.4; text-transform: uppercase;
+  font-size: 10px !important; font-weight: 800 !important; letter-spacing: 1.05px !important;
+}
+#sidebarNavigation .sidebar-module-toggle:hover,
+#sidebarNavigation .sidebar-module-toggle:focus-visible,
+#sidebarNavigation .sidebar-module-toggle.is-expanded { background: rgba(255,255,255,.08); color: #fff !important; }
+#sidebarNavigation .sidebar-module-toggle:focus-visible { outline: 2px solid #91bfff; outline-offset: 1px; }
+#sidebarNavigation .module-chevron { flex: 0 0 auto; transition: transform .18s ease; font-size: 13px; }
+#sidebarNavigation .sidebar-module-toggle.is-expanded .module-chevron { transform: rotate(180deg); }
+#sidebarNavigation .sidebar-module-links { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+#sidebarNavigation .sidebar-module-links[hidden] { display: none !important; }
+#sidebarNavigation .sidebar-module-links > a { display: flex; align-items: center; gap: 12px; min-height: 39px; padding: 10px 12px; border-radius: 9px; color: #d9e7ff; text-decoration: none; font-size: 13px; overflow-wrap: anywhere; }
+#sidebarNavigation .sidebar-module-links > a:hover,
+#sidebarNavigation .sidebar-module-links > a:focus-visible { background: rgba(255,255,255,.1); color: #fff; }
+#sidebarNavigation .sidebar-module-links > a:focus-visible { outline: 2px solid #91bfff; outline-offset: 1px; }
+@media (max-width: 600px) {
+  #sidebarNavigation .sidebar-module-toggle { padding: 10px 8px 7px !important; font-size: 9px !important; }
+  #sidebarNavigation .sidebar-module-links > a { min-height: 42px; padding: 10px 9px; }
+}

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Lotes e validade')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container">
+  <div class="page-heading">
+    <div><p class="eyebrow">ESTOQUE</p><h1>Lotes e validade</h1><p class="muted">Acompanhe os lotes registrados e identifique itens próximos do vencimento.</p></div>
+    <div class="actions"><a class="button" th:href="@{/estoque/rastreabilidade-cirurgias}">Rastreabilidade por cirurgia</a><a class="button secondary" th:href="@{/compras/solicitacoes}">Solicitações de compra</a></div>
+  </div>
+  <section class="panel">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Item</th><th>Lote</th><th>Validade</th><th>Quantidade inicial</th><th>Saldo do lote</th><th>Origem</th><th>Situação</th></tr></thead>
+      <tbody>
+        <tr th:each="l : ${lotes}">
+          <td th:text="${l.item.nome}"></td>
+          <td th:text="${l.numeroLote}"></td>
+          <td th:text="${#temporals.format(l.dataValidade,'dd/MM/yyyy')}"></td>
+          <td th:text="${l.quantidadeInicial}"></td>
+          <td th:text="${l.quantidadeAtual}"></td>
+          <td th:text="${l.origemCompraId != null ? 'Compra #' + l.origemCompraId : 'Cadastro manual'}"></td>
+          <td><span class="pill" th:classappend="${l.dataValidade.isBefore(hoje) ? ' danger' : (!l.dataValidade.isAfter(limiteAlerta) ? ' warning' : '')}"
+                    th:text="${l.dataValidade.isBefore(hoje) ? 'VENCIDO' : (!l.dataValidade.isAfter(limiteAlerta) ? 'VENCE EM ATÉ 90 DIAS' : 'VÁLIDO')}"></span></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(lotes)}"><td colspan="7" class="empty">Nenhum lote cadastrado. Os lotes serão registrados nos próximos recebimentos de compra.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+</main>
+</body>
+</html>

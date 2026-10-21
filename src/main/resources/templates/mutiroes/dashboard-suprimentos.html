@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Dashboard gerencial de suprimentos')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<main class="container supply-dashboard">
+  <header class="page-heading supply-heading">
+    <div>
+      <p class="eyebrow">CENTRO CIRÚRGICO · SUPRIMENTOS</p>
+      <h1>Dashboard gerencial de suprimentos</h1>
+      <p class="muted">Visão consolidada das solicitações, separação e pendências.</p>
+    </div>
+    <div class="supply-actions">
+      <a class="button" th:href="@{/mutiroes/solicitacoes}">Solicitações</a>
+      <a class="button primary" th:href="@{/mutiroes/relatorios-consumo}">Relatório de consumo</a>
+    </div>
+  </header>
+
+  <section class="panel supply-filter-panel" aria-label="Filtros do dashboard">
+    <form method="get" th:action="@{/mutiroes/dashboard-suprimentos}" class="supply-filter-form">
+      <div class="filter-field">
+        <label for="filtroStatus">Status da solicitação</label>
+        <select id="filtroStatus" name="status">
+          <option value="">Todos os status</option>
+          <option value="RASCUNHO" th:selected="${filtroStatus == 'RASCUNHO'}">Rascunho</option>
+          <option value="ENVIADA" th:selected="${filtroStatus == 'ENVIADA'}">Enviada para aprovação</option>
+          <option value="APROVADA" th:selected="${filtroStatus == 'APROVADA'}">Aprovada</option>
+          <option value="EM_SEPARACAO" th:selected="${filtroStatus == 'EM_SEPARACAO'}">Em separação</option>
+          <option value="ENTREGUE" th:selected="${filtroStatus == 'ENTREGUE'}">Entregue</option>
+        </select>
+      </div>
+      <div class="filter-field"><label for="dataInicio">Criada a partir de</label><input id="dataInicio" name="dataInicio" type="date" th:value="${dataInicio}" /></div>
+      <div class="filter-field"><label for="dataFim">Criada até</label><input id="dataFim" name="dataFim" type="date" th:value="${dataFim}" /></div>
+      <div class="filter-actions"><button type="submit" class="button primary">Aplicar filtros</button><a class="button" th:href="@{/mutiroes/dashboard-suprimentos}">Limpar</a></div>
+      <div class="filter-export"><a class="button export-button" th:href="@{/mutiroes/dashboard-suprimentos/exportar.csv(status=${filtroStatus},dataInicio=${dataInicio},dataFim=${dataFim})}">Exportar CSV</a></div>
+    </form>
+    <p class="filter-result-count" th:text="${quantidadeFiltrada + ' solicitação(ões) no filtro selecionado'}">0 solicitações</p>
+  </section>
+
+  <section class="supply-metrics" aria-label="Indicadores de suprimentos">
+    <article class="supply-metric"><div class="metric-top"><span class="metric-icon">▤</span><span class="metric-caption">Total cadastrado</span></div><p class="metric-label">Solicitações</p><strong class="metric-value" th:text="${totalSolicitacoes}">0</strong><span class="metric-foot">Solicitações registradas</span></article>
+    <article class="supply-metric"><div class="metric-top"><span class="metric-icon blue">↗</span><span class="metric-caption">Todos os itens</span></div><p class="metric-label">Quantidade solicitada</p><strong class="metric-value" th:text="${#numbers.formatDecimal(totalSolicitado,1,2)}">0,00</strong><span class="metric-foot">Quantidade total pedida</span></article>
+    <article class="supply-metric"><div class="metric-top"><span class="metric-icon green">✓</span><span class="metric-caption">Conferida até agora</span></div><p class="metric-label">Quantidade separada</p><strong class="metric-value green-text" th:text="${#numbers.formatDecimal(totalSeparado,1,2)}">0,00</strong><span class="metric-foot">Quantidade já separada</span></article>
+    <article class="supply-metric"><div class="metric-top"><span class="metric-icon red">!</span><span class="metric-caption">Atenção necessária</span></div><p class="metric-label">Quantidade pendente</p><strong class="metric-value red-text" th:text="${#numbers.formatDecimal(totalPendente,1,2)}">0,00</strong><span class="metric-foot" th:text="${itensComPendencia + ' itens com pendência'}">0 itens com pendência</span></article>
+  </section>
+
+  <section class="supply-content-grid">
+    <article class="panel supply-panel">
+      <div class="supply-section-heading"><div><p class="eyebrow">ACOMPANHAMENTO</p><h2>Solicitações por status</h2></div></div>
+      <div class="supply-status-list">
+        <div class="supply-status-row"><span><i class="status-dot draft"></i>Rascunho</span><strong th:text="${porStatus['RASCUNHO']}">0</strong></div>
+        <div class="supply-status-row"><span><i class="status-dot sent"></i>Enviadas para aprovação</span><strong th:text="${porStatus['ENVIADA']}">0</strong></div>
+        <div class="supply-status-row"><span><i class="status-dot approved"></i>Aprovadas</span><strong th:text="${porStatus['APROVADA']}">0</strong></div>
+        <div class="supply-status-row"><span><i class="status-dot separation"></i>Em separação</span><strong th:text="${porStatus['EM_SEPARACAO']}">0</strong></div>
+        <div class="supply-status-row"><span><i class="status-dot delivered"></i>Entregues</span><strong th:text="${porStatus['ENTREGUE']}">0</strong></div>
+      </div>
+    </article>
+    <article class="panel supply-panel">
+      <div class="supply-section-heading"><div><p class="eyebrow">CONFERÊNCIA</p><h2>Indicadores de conferência</h2></div></div>
+      <p class="muted supply-description">Valores calculados a partir das quantidades registradas nas solicitações.</p>
+      <div class="supply-check-stat"><span>Itens com separação parcial</span><strong th:text="${itensComSeparacaoParcial}">0</strong></div>
+      <div class="supply-check-stat"><span>Saldo pendente acumulado</span><strong class="red-text" th:text="${#numbers.formatDecimal(totalPendente,1,2)}">0,00</strong></div>
+      <a class="button primary supply-analyze" th:href="@{/mutiroes/relatorios-consumo}">Analisar divergências <span aria-hidden="true">→</span></a>
+    </article>
+  </section>
+
+  <section class="panel supply-recent-panel">
+    <div class="supply-section-heading recent-heading"><div><p class="eyebrow">ÚLTIMAS MOVIMENTAÇÕES</p><h2>Solicitações recentes</h2></div><a class="button" th:href="@{/mutiroes/solicitacoes}">Ver todas</a></div>
+    <div class="table-wrap supply-table-wrap"><table class="supply-table"><thead><tr><th>Mutirão</th><th>Solicitante</th><th>Itens</th><th>Status</th><th>Criada em</th><th>Ação</th></tr></thead><tbody>
+      <tr th:each="s : ${ultimasSolicitacoes}"><td class="supply-event-name" th:text="${s.dia != null and s.dia.evento != null ? s.dia.evento.nome : 'Mutirão não informado'}">Mutirão</td><td th:text="${s.solicitante}">Solicitante</td><td th:text="${#lists.size(s.itens)}">0</td><td><span class="pill" th:text="${s.status}">Status</span></td><td th:text="${s.criadoEm != null ? #temporals.format(s.criadoEm,'dd/MM/yyyy HH:mm') : '-'}">-</td><td><a class="button small" th:href="@{/mutiroes/solicitacoes/{id}(id=${s.id})}">Abrir</a></td></tr>
+      <tr th:if="${#lists.isEmpty(ultimasSolicitacoes)}"><td colspan="6" class="empty">Ainda não existem solicitações cadastradas.</td></tr>
+    </tbody></table></div>
+  </section>
+  <p class="supply-note">Os indicadores refletem os dados cadastrados. A quantidade pendente é calculada como solicitado menos separado, limitada a zero; não representa movimentação automática de estoque.</p>
+</main>
+<style>
+.supply-dashboard{max-width:1500px!important;padding-top:30px}.supply-heading{align-items:flex-end}.supply-heading h1{font-size:clamp(26px,3vw,34px);font-weight:800;letter-spacing:-.8px}.supply-actions{display:flex;gap:9px;flex-wrap:wrap}.supply-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:0 0 22px}.supply-metric{min-width:0;background:#fff;border:1px solid #e5ebf3;border-radius:15px;padding:20px;box-shadow:0 8px 28px #19365b08}.metric-top{display:flex;align-items:center;justify-content:space-between;gap:8px}.metric-icon{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:#f0f4fa;color:#52647e;font-weight:800;font-size:20px}.metric-icon.blue{background:#eaf2ff;color:#2463bd}.metric-icon.green{background:#e6f7ed;color:#147443}.metric-icon.red{background:#fff0ed;color:#b42318}.metric-caption{font-size:11px;color:#7b8798;text-align:right}.metric-label{margin:16px 0 3px;color:#52627a;font-size:13px;font-weight:650}.metric-value{display:block;font-size:clamp(25px,2.5vw,32px);line-height:1.2;letter-spacing:-.8px;color:#172b46;font-weight:800;font-variant-numeric:tabular-nums}.metric-foot{display:block;margin-top:8px;color:#7b8798;font-size:11px}.green-text{color:#16804a!important}.red-text{color:#c0362c!important}.supply-content-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:18px;margin-bottom:20px}.supply-panel,.supply-recent-panel{min-width:0;padding:23px!important}.supply-section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.supply-section-heading h2{font-size:19px;font-weight:800;letter-spacing:-.3px;margin:4px 0 0}.supply-section-heading .eyebrow{font-size:10px}.supply-status-list{display:flex;flex-direction:column}.supply-status-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 2px;border-bottom:1px solid #edf1f6;color:#34445b;font-size:13px}.supply-status-row:last-child{border-bottom:0}.supply-status-row span{display:flex;align-items:center;gap:10px}.supply-status-row strong{min-width:30px;text-align:center;padding:4px 9px;border-radius:8px;background:#f1f5f9;color:#26364d;font-size:12px}.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#94a3b8}.status-dot.sent{background:#3b82f6}.status-dot.approved{background:#16a34a}.status-dot.separation{background:#d97706}.status-dot.delivered{background:#0f766e}.supply-description{font-size:13px;line-height:1.6;margin:0 0 16px}.supply-check-stat{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0;border-bottom:1px solid #edf1f6;font-size:13px;color:#34445b}.supply-check-stat strong{font-size:18px;color:#172b46;font-variant-numeric:tabular-nums}.supply-analyze{margin-top:20px}.supply-analyze span{margin-left:8px}.recent-heading{margin-bottom:15px}.supply-table-wrap{border:1px solid #e7edf5;border-radius:10px}.supply-table{min-width:760px}.supply-table th{white-space:nowrap}.supply-event-name{font-weight:750;color:#26364d}.supply-table td{font-size:13px}.supply-note{font-size:11px;line-height:1.6;color:#7b8798;margin:14px 2px 0;max-width:1000px}
+.supply-filter-panel{padding:18px 20px!important;margin-bottom:20px}.supply-filter-form{display:grid;grid-template-columns:1.1fr 1fr 1fr auto auto;align-items:end;gap:12px}.filter-field{display:flex;flex-direction:column;gap:6px;min-width:0}.filter-field label{font-size:12px;font-weight:700;color:#52627a}.filter-field select,.filter-field input{width:100%;min-height:41px;border:1px solid #d8e1ed;border-radius:9px;padding:8px 10px;background:#fff;color:#25364d;font:inherit;font-size:13px}.filter-actions{display:flex;gap:7px;align-items:center}.filter-actions .button,.filter-export .button{white-space:nowrap;min-height:41px;display:inline-flex;align-items:center;justify-content:center}.filter-export{display:flex}.export-button{border-color:#b7c9df!important;color:#214e84!important;background:#f4f8fd!important}.filter-result-count{margin:12px 0 0;font-size:11px;color:#7b8798}.supply-filter-panel .button{font-size:12px;padding:9px 12px}
+@media(max-width:1250px){.supply-filter-form{grid-template-columns:repeat(3,minmax(0,1fr))}.filter-actions,.filter-export{grid-column:auto}}
+@media(max-width:1100px){.supply-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.supply-content-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:900px){.supply-dashboard{padding-top:70px}.supply-heading{align-items:flex-start}.supply-content-grid{grid-template-columns:1fr}}
+@media(max-width:560px){.supply-filter-panel{padding:14px!important}.supply-filter-form{grid-template-columns:1fr 1fr}.filter-field:first-child{grid-column:1/-1}.filter-actions{grid-column:1/-1}.filter-actions .button{flex:1}.filter-export{grid-column:1/-1}.filter-export .button{width:100%}.supply-dashboard{width:calc(100% - 20px)!important;margin:62px auto 32px!important;padding:0}.supply-heading h1{font-size:25px}.supply-metrics{gap:10px}.supply-metric{padding:13px;border-radius:12px}.metric-icon{width:31px;height:31px;font-size:16px}.metric-caption{font-size:10px}.metric-label{font-size:12px;margin-top:12px}.metric-value{font-size:24px}.metric-foot{font-size:10px}.supply-panel,.supply-recent-panel{padding:15px!important}.supply-actions{width:100%}.supply-actions .button{flex:1}.supply-section-heading h2{font-size:17px}}
+</style>
+</body></html>

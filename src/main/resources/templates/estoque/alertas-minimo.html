@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Alertas de estoque mínimo')}"></head>
+<body><header th:replace="~{fragments/layout :: navbar}"></header>
+<main class="container">
+<div th:replace="~{fragments/layout :: mensagens}"></div>
+<div class="page-heading"><div><p class="eyebrow">SUPRIMENTOS</p><h1>Alertas de estoque mínimo</h1><p class="muted">Itens ativos cujo saldo está igual ou abaixo do mínimo configurado.</p></div><div class="actions"><a class="button" th:href="@{/estoque}">Voltar ao estoque</a><a class="button primary" th:href="@{/estoque/movimentacoes/nova}">+ Registrar reposição</a></div></div>
+<section class="stats-grid">
+<div class="stat-card"><span>Itens em alerta</span><strong th:text="${totalAlertas}">0</strong></div>
+<div class="stat-card"><span>Itens sem saldo</span><strong th:text="${semSaldo}">0</strong></div>
+<div class="stat-card"><span>Quantidade total para atingir o mínimo</span><strong th:text="${#numbers.formatDecimal(totalReposicao,1,3)}">0</strong></div>
+</section>
+<section class="panel"><h2>Itens que precisam de atenção</h2><div class="table-wrap"><table><thead><tr><th>Código</th><th>Item</th><th>Unidade</th><th>Saldo atual</th><th>Estoque mínimo</th><th>Quantidade sugerida para reposição</th><th>Prioridade</th><th>Ação</th></tr></thead><tbody>
+<tr th:each="i : ${itens}"><td th:text="${i.codigo}"></td><td th:text="${i.nome}"></td><td th:text="${i.unidadeMedida}"></td><td th:text="${i.estoqueGeral != null ? i.estoqueGeral.quantidadeAtual : 0}"></td><td th:text="${i.estoqueMinimo}"></td><td th:text="${(i.estoqueMinimo != null ? i.estoqueMinimo : 0).subtract(i.estoqueGeral != null ? i.estoqueGeral.quantidadeAtual : T(java.math.BigDecimal).ZERO).max(T(java.math.BigDecimal).ZERO)}"></td><td><span class="pill" th:classappend="${i.estoqueGeral == null or i.estoqueGeral.quantidadeAtual == null or i.estoqueGeral.quantidadeAtual.compareTo(T(java.math.BigDecimal).ZERO) <= 0 ? ' danger' : ' warning'}" th:text="${i.estoqueGeral == null or i.estoqueGeral.quantidadeAtual == null or i.estoqueGeral.quantidadeAtual.compareTo(T(java.math.BigDecimal).ZERO) <= 0 ? 'CRÍTICO — sem saldo' : 'Reposição necessária'}"></span></td><td><a class="button small" th:href="@{/estoque/movimentacoes/nova}">Registrar entrada</a></td></tr>
+<tr th:if="${#lists.isEmpty(itens)}"><td colspan="8" class="empty">Nenhum item abaixo do estoque mínimo. Todos os saldos estão dentro do limite configurado.</td></tr>
+</tbody></table></div><p class="muted">A quantidade sugerida corresponde à diferença entre o estoque mínimo e o saldo atual. Este painel não realiza compras nem altera o estoque automaticamente.</p></section>
+</main><div th:replace="~{fragments/paginacao :: scripts}"></div></body></html>
